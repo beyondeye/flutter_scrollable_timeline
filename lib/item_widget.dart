@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class ItemWidget extends StatefulWidget {
@@ -9,13 +7,11 @@ class ItemWidget extends StatefulWidget {
   final Map curItem;
   // *DARIO* potentially independent bg color for each item
   final Color backgroundColor;
-  // *DARIO* the units for the scale we are showing
-  final String suffix;
 
   const ItemWidget(
     this.curItem,
     this.backgroundColor,
-    this.suffix, {
+  {
     Key? key,
   }) : super(key: key);
 
@@ -24,21 +20,16 @@ class ItemWidget extends StatefulWidget {
 }
 
 class _ItemWidgetState extends State<ItemWidget> {
-  late List<String> textParts;
-  late String leftText, rightText;
+  late String minsText, secsText;
 
   @override
   void initState() {
     super.initState();
-    int decimalCount = 1;
-    num fac = pow(10, decimalCount);
 
     //*DARIO* TODO *IMPORTANT* this code here must be modified in order to customize how
     //        value is translated to actual text to shoiw
-    var mtext = ((widget.curItem["value"] * fac).round() / fac).toString();
-    textParts = mtext.split(".");
-    leftText = textParts.first;
-    rightText = textParts.last;
+    secsText = widget.curItem["value_s"].toString();
+    minsText = widget.curItem["value_m"].toString();
   }
 
   @override
@@ -68,34 +59,25 @@ class _ItemWidgetState extends State<ItemWidget> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: leftText,
+                      text: minsText,
                       style: TextStyle(
                           fontSize: widget.curItem["fontSize"],
                           color: widget.curItem["color"],
-                          fontWeight: rightText == "0"
+                          fontWeight: secsText == "0"
                               ? FontWeight.w800
                               : FontWeight.w400),
                     ),
+                  ],
+                ),
+              ),
+              RichText( //*DARIO* this is the main text  label for this element
+                text: TextSpan(
+                  children: [
                     TextSpan(
-                      text: rightText == "0" ? "" : ".",
+                      text: secsText,
                       style: TextStyle(
-                        fontSize: widget.curItem["fontSize"] - 3,
-                        color: widget.curItem["color"],
-                      ),
-                    ),
-                    TextSpan(
-                      text: rightText == "0" ? "" : rightText,
-                      style: TextStyle(
-                        fontSize: widget.curItem["fontSize"] - 3,
-                        color: widget.curItem["color"],
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.suffix.isEmpty ? "" : widget.suffix,
-                      style: TextStyle(
-                        fontSize: widget.curItem["fontSize"],
-                        color: widget.curItem["color"],
-                      ),
+                          fontSize: widget.curItem["fontSize"],
+                          color: widget.curItem["color"]),
                     )
                   ],
                 ),

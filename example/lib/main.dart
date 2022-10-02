@@ -35,19 +35,20 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               HorizontalPicker(
-                minValue: 0,
-                maxValue: 10,
-                divisions: 10,
+                lengthSecs: 30,
+                stepSecs: 5,
                 height: 120,
-                onChanged: (value) {},
+                onChanged: (value) {
+                  setState(() {
+                    newValue = value;
+                  });
+                },
               ),
               Divider(),
               HorizontalPicker(
-                minValue: 0,
-                maxValue: 10,
-                divisions: 10,
+                lengthSecs: 300,
+                stepSecs: 10,
                 height: 120,
-                suffix: " \u00b0C",
                 showCursor: false,
                 backgroundColor: Colors.lightBlue.shade50,
                 activeItemTextColor: Colors.blue.shade800,
@@ -56,19 +57,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               Divider(),
               HorizontalPicker(
-                minValue: -10,
-                maxValue: 55,
-                divisions: 600,
+                lengthSecs: 600,
+                stepSecs: 5,
                 height: 120,
-                suffix: " cm",
                 showCursor: false,
                 backgroundColor: Colors.grey.shade900,
                 activeItemTextColor: Colors.white,
                 passiveItemsTextColor: Colors.amber,
                 onChanged: (value) {
-                  setState(() {
-                    newValue = value;
-                  });
+
                 },
               ),
               Text(newValue.toString())

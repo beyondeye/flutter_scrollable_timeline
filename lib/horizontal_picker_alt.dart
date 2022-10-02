@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import 'item_widget.dart';
@@ -43,6 +41,7 @@ class _HorizontalPickerAltState extends State<HorizontalPickerAlt> {
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late FixedExtentScrollController _scrollController;
   late int curItem;
+  late double curTime;
   List<Map> valueMap = [];
 
   @override
@@ -101,16 +100,18 @@ class _HorizontalPickerAltState extends State<HorizontalPickerAlt> {
                 perspective : 0.001, //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
                 onSelectedItemChanged: (item) {
                   curItem = item;
+                  curTime = _scrollController.offset;
+                  widget.onChanged(valueMap[item]["value"]);
+                  /*
                   int decimalCount = 1;
                   num fac = pow(10, decimalCount);
                   valueMap[item]["value"] =
                       (valueMap[item]["value"] * fac).round() / fac;
-                  widget.onChanged(valueMap[item]["value"]);
                   for (var i = 0; i < valueMap.length; i++) {
                     if (i == item) {
                       valueMap[item]["color"] = widget.activeItemTextColor;
                       valueMap[item]["fontSize"] = 15.0;
-                      valueMap[item]["hasBorders"] = true; //*DARIO* currently "hasBorders" attribute is ignored
+                      valueMap[item]["hasBorders"] = true; // *DARIO* currently "hasBorders" attribute is ignored
                     } else {
                       valueMap[i]["color"] = widget.passiveItemsTextColor;
                       valueMap[i]["fontSize"] = 14.0;
@@ -118,12 +119,12 @@ class _HorizontalPickerAltState extends State<HorizontalPickerAlt> {
                     }
                   }
                   setState(() {});
+                   */
                 },
                 children: valueMap.map((Map curValue) {
                   return ItemWidget(
                     curValue,
                     widget.backgroundColor,
-                    widget.suffix,
                   );
                 }).toList()),
           ),

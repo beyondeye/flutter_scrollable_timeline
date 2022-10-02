@@ -7,8 +7,8 @@ import 'item_widget.dart';
 enum InitialPosition { start, center, end }
 
 class HorizontalPicker extends StatefulWidget {
-  final double minValue, maxValue;
-  final int divisions;
+  final int lengthSecs;
+  final int stepSecs;
   final double height;
   final Function(double) onChanged;
   final InitialPosition initialPosition;
@@ -17,12 +17,11 @@ class HorizontalPicker extends StatefulWidget {
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
-  final String suffix;
+  final bool highlightedCurItem;
 
   HorizontalPicker({
-    required this.minValue,
-    required this.maxValue,
-    required this.divisions,
+    required this.lengthSecs,
+    required this.stepSecs,
     required this.height,
     required this.onChanged,
     this.initialPosition = InitialPosition.center,
@@ -31,8 +30,8 @@ class HorizontalPicker extends StatefulWidget {
     this.cursorColor = Colors.red,
     this.activeItemTextColor = Colors.blue,
     this.passiveItemsTextColor = Colors.grey,
-    this.suffix = "",
-  }) : assert(minValue < maxValue);
+    this.highlightedCurItem=false
+  }) : assert(stepSecs>0),assert(lengthSecs>stepSecs);
 
   @override
   _HorizontalPickerState createState() => _HorizontalPickerState();
@@ -49,17 +48,20 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
   void initState() {
     super.initState();
 
-    // *DARIO* this define each item in the horizontal scale according to number of
-    // divisions and according to widget minValue and maxValue:
-    // *IMPORTANT* I need to customize it
-    //TODO I need to define a "value" a "primary_value" a "secondary_value (minutes and seconds
-    for (var i = 0; i <= widget.divisions; i++) {
+    //*DARIO* the code in this method should be refactore and made more general for different kinds of horizontal pickers?
+    final divisions =(widget.lengthSecs/widget.stepSecs).ceil()+1;
+    var t=0;
+    for (var i = 0; i <= divisions; i++) {
+      final secs= t % 60;
+      final mins = (t /60).floor();
       valueMap.add({
-        "value": widget.minValue +
-            ((widget.maxValue - widget.minValue) / widget.divisions) * i,
+        "value": t,
+        "value_s": secs,
+        "value_m": mins,
         "fontSize": 14.0,
         "color": widget.passiveItemsTextColor,
       });
+      t += widget.stepSecs;
     }
     setScrollController();
   }
@@ -108,7 +110,7 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
                       (valueMap[item]["value"] * fac).round() / fac;
                   widget.onChanged(valueMap[item]["value"]);
                   for (var i = 0; i < valueMap.length; i++) {
-                    if (i == item) {
+                    if (i == item && widget.highlightedCurItem) {
                       valueMap[item]["color"] = widget.activeItemTextColor;
                       valueMap[item]["fontSize"] = 15.0;
                       valueMap[item]["hasBorders"] = true; //*DARIO* currently "hasBorders" attribute is ignored
@@ -123,8 +125,7 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
                 children: valueMap.map((Map curValue) {
                   return ItemWidget(
                     curValue,
-                    widget.backgroundColor,
-                    widget.suffix,
+                    widget.backgroundColor
                   );
                 }).toList()),
           ),
