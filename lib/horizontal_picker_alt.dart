@@ -52,7 +52,6 @@ class _HorizontalPickerAltState extends State<HorizontalPickerAlt> {
     // *DARIO* this define each item in the horizontal scale according to number of
     // divisions and according to widget minValue and maxValue:
     // *IMPORTANT* I need to customize it
-    //TODO I need to define a "value" a "primary_value" a "secondary_value (minutes and seconds
     for (var i = 0; i <= widget.divisions; i++) {
       valueMap.add({
         "value": widget.minValue +
