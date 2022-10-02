@@ -39,6 +39,8 @@ class HorizontalPicker extends StatefulWidget {
 }
 
 class _HorizontalPickerState extends State<HorizontalPicker> {
+  // *DARIO* Similar to a standard [ScrollController] but with the added convenience
+  // mechanisms to read and go to item indices rather than a raw pixel scroll
   late FixedExtentScrollController _scrollController;
   late int curItem;
   List<Map> valueMap = [];
@@ -47,6 +49,10 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
   void initState() {
     super.initState();
 
+    // *DARIO* this define each item in the horizontal scale according to number of
+    // divisions and according to widget minValue and maxValue:
+    // *IMPORTANT* I need to customize it
+    //TODO I need to define a "value" a "primary_value" a "secondary_value (minutes and seconds
     for (var i = 0; i <= widget.divisions; i++) {
       valueMap.add({
         "value": widget.minValue +
@@ -82,13 +88,18 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
       height: widget.height,
       alignment: Alignment.center,
       color: widget.backgroundColor,
-      child: Stack(
+      child: Stack( //*DARIO* use a stack here in order to show the (optional) cursor on top of the scrollview
         children: <Widget>[
-          RotatedBox(
+          RotatedBox( //*DARIO* needed to make ListWheelScrollView horizontal
             quarterTurns: 3,
             child: ListWheelScrollView(
                 controller: _scrollController,
-                itemExtent: 60,
+                itemExtent: 60, //the size in pixel of each item in the scale
+                useMagnifier: false, //*DARIO* magnification of center item
+                magnification: 1.0,  //*DARIO* magnification of center item (not continuous)
+                squeeze: 1, //*DARIO* squeeze factor for item size (itemExtent) to show more items
+                diameterRatio :2, //default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
+                perspective : 0.001, //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
                 onSelectedItemChanged: (item) {
                   curItem = item;
                   int decimalCount = 1;
@@ -100,7 +111,7 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
                     if (i == item) {
                       valueMap[item]["color"] = widget.activeItemTextColor;
                       valueMap[item]["fontSize"] = 15.0;
-                      valueMap[item]["hasBorders"] = true;
+                      valueMap[item]["hasBorders"] = true; //*DARIO* currently "hasBorders" attribute is ignored
                     } else {
                       valueMap[i]["color"] = widget.passiveItemsTextColor;
                       valueMap[i]["fontSize"] = 14.0;
@@ -117,19 +128,19 @@ class _HorizontalPickerState extends State<HorizontalPicker> {
                   );
                 }).toList()),
           ),
-          Visibility(
+          Visibility( //*DARIO* visibility modifier to make the cursor optional
             visible: widget.showCursor,
             child: Container(
-              alignment: Alignment.center,
-              padding: const EdgeInsets.all(5),
+              alignment: Alignment.center, //put it at the center
+              padding: const EdgeInsets.all(5), //*DARIO* this padding define how close to top and bottom border the cursor get
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.all(
-                    Radius.circular(10),
+                    Radius.circular(10), //*DARIO* this is the radius at the top and bottom of the cursor: it is almost invisible
                   ),
-                  color: widget.cursorColor.withOpacity(0.3),
+                  color: widget.cursorColor.withOpacity(0.3), //*dario* make the cursor semi-transparent
                 ),
-                width: 3,
+                width: 3, //*DARIO* this is the width of the cursor
               ),
             ),
           )

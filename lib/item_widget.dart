@@ -3,8 +3,13 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ItemWidget extends StatefulWidget {
+  //*DARIO* data used to customize the item:
+  // "value","fontSize","color" in original code
+  //TODO this is very inefficient, although it is very flexible
   final Map curItem;
+  // *DARIO* potentially independent bg color for each item
   final Color backgroundColor;
+  // *DARIO* the units for the scale we are showing
   final String suffix;
 
   const ItemWidget(
@@ -28,6 +33,8 @@ class _ItemWidgetState extends State<ItemWidget> {
     int decimalCount = 1;
     num fac = pow(10, decimalCount);
 
+    //*DARIO* TODO *IMPORTANT* this code here must be modified in order to customize how
+    //        value is translated to actual text to shoiw
     var mtext = ((widget.curItem["value"] * fac).round() / fac).toString();
     textParts = mtext.split(".");
     leftText = textParts.first;
@@ -46,18 +53,18 @@ class _ItemWidgetState extends State<ItemWidget> {
           color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: RotatedBox(
+        child: RotatedBox( //*DARIO* this is needed because we rotate ListWheelScrollView to make it horizontal
           quarterTurns: 1,
-          child: Column(
+          child: Column( //*DARIO* we have a column here!
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "|",
+                "|", //*DARIO* this is the top alignment line
                 style: TextStyle(fontSize: 8, color: widget.curItem["color"]),
               ),
               const SizedBox(height: 5),
-              RichText(
+              RichText( //*DARIO* this is the main text  label for this element
                 text: TextSpan(
                   children: [
                     TextSpan(
