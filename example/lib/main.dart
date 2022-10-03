@@ -23,8 +23,25 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+class _Ticker {
+  final double tmin;
+  final double tmax;
+  final double tstep;
+  final int tickperiod;
+  double curt;
+  _Ticker(this.tmin,this.tmax,{this.tstep=1.0,this.tickperiod=1}):curt=tmin;
+  Stream<double> tick({required int ticks}) {
+    return Stream.periodic(Duration(seconds: tickperiod), (idx) { 
+      curt+=tstep;
+      curt=curt.clamp(tmin, tmax);
+      return curt;
+    }).take(ticks);
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   double? newValue;
+  final ticker= _Ticker(0.0, 30.0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 lengthSecs: 30,
                 stepSecs: 5,
                 height: 120,
-                onChanged: (value) {
+                timeStream: ticker.tick(ticks: 60),
+                onItemSelected: (value) {
                   setState(() {
                     newValue = value;
                   });
@@ -53,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 backgroundColor: Colors.lightBlue.shade50,
                 activeItemTextColor: Colors.blue.shade800,
                 passiveItemsTextColor: Colors.blue.shade300,
-                onChanged: (value) {},
+                onItemSelected: (value) {},
               ),
               Divider(),
               ScrollableTimeline(
@@ -64,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 backgroundColor: Colors.grey.shade900,
                 activeItemTextColor: Colors.white,
                 passiveItemsTextColor: Colors.amber,
-                onChanged: (value) {
+                onItemSelected: (value) {
 
                 },
               ),

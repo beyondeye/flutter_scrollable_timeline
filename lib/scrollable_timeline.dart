@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -6,11 +7,18 @@ import 'item_widget.dart';
 
 enum InitialPosition { start, center, end }
 
+// see https://stackoverflow.com/questions/69960331/constant-constructor-and-function-in-dart
+// anonymous function cannot be const in dart
+void _stub(double t) {}
+
 class ScrollableTimeline extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
   final double height;
-  final Function(double) onChanged; //TODO: rename this method onDragEnd and add also method onDragStart
+  final Stream<double>? timeStream;
+  final Function(double) onItemSelected;
+  final Function(double) onDragStart;
+  final Function(double) onDragEnd;
   final InitialPosition initialPosition;
   final Color backgroundColor;
   final bool showCursor;
@@ -25,7 +33,10 @@ class ScrollableTimeline extends StatefulWidget {
       {required this.lengthSecs,
       required this.stepSecs,
       required this.height,
-      required this.onChanged,
+      this.timeStream,
+      this.onItemSelected= _stub,
+      this.onDragStart = _stub,
+      this.onDragEnd =_stub,
       this.initialPosition = InitialPosition.center,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
@@ -49,11 +60,13 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   late int curItem; //TODO: why late? make it instead nullable
   late double curTime; //TODO: why late? make it instead nullable
   List<Map> valueMap = [];
+  bool isDragging=false;
+  StreamSubscription<double>? timeStreamSub;
 
   @override
   void initState() {
     super.initState();
-
+    isDragging=false; //if isDragging then ignore stream updates about current playing time
     //*DARIO* the code in this method should be refactore and made more general for different kinds of horizontal pickers?
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
@@ -69,11 +82,27 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
       });
       t += widget.stepSecs;
     }
+    //TODO initial time value should be provided from outside
     setScrollController();
+    //important: set timeStreamSub after setting up scrollController
+    timeStreamSub = widget.timeStream?.listen((t) {
+      if(isDragging) return; //ignore time update if dragging
+      //TODO check if t in the range of the scrollable timeline: if not then clip position to inside the allowed range
+      _scrollController.jumpTo(t*widget.pixPerSecs);
+    });
+  }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    timeStreamSub?.cancel();
   }
 
   void setScrollController() {
     int initialItem;
+    //TODO: instead of initial position here I should pass initial time:
+    //       perhaps don't use FixedExtentScrollController
     switch (widget.initialPosition) {
       case InitialPosition.start:
         initialItem = 0;
@@ -87,6 +116,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     }
 
     _scrollController = FixedExtentScrollController(initialItem: initialItem);
+//    _scrollController.jumpTo(value);
   }
 
   @override
@@ -95,11 +125,15 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
         onNotification: (scrollNotification) {
           final tick=widget.pixPerSecs;
           if (scrollNotification is ScrollStartNotification) {
-            print("*FLT* Scroll Start ${_scrollController.offset / tick}");
-          } else if (scrollNotification is ScrollUpdateNotification) {
-            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
+//            print("*FLT* Scroll Start ${_scrollController.offset / tick}");
+            isDragging=true;
+            this.widget.onDragStart(_scrollController.offset / tick);
+//          } else if (scrollNotification is ScrollUpdateNotification) {
+//            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
           } else if (scrollNotification is ScrollEndNotification) {
-            print("*FLT*Scroll End ${_scrollController.offset / tick}");
+//            print("*FLT*Scroll End ${_scrollController.offset / tick}");
+            this.widget.onDragEnd(_scrollController.offset / tick);
+            isDragging=false;
           }
           return true;
         },
@@ -117,7 +151,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                   quarterTurns: 3,
                   child: ListWheelScrollView(
                       controller: _scrollController,
-                      itemExtent: 60,
+                      itemExtent: widget.itemExtent.toDouble(),
                       //the size in pixel of each item in the scale
                       useMagnifier: false,
                       //*DARIO* magnification of center item
@@ -129,10 +163,10 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                       //default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
                       perspective: 0.001,
                       //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
-                      onSelectedItemChanged: (item) {
+                      onSelectedItemChanged: (item) { //TODO: we actually don't need onSelectedItemChanged (we actually don't need ListWheelScrollView
                         curItem = item;
                         curTime = _scrollController.offset;
-                        widget.onChanged((valueMap[item]["value"] as int).toDouble());
+                        widget.onItemSelected((valueMap[item]["value"] as int).toDouble());
                       },
                       children: valueMap.map((Map curValue) {
                         return ItemWidget(curValue, widget.backgroundColor);
