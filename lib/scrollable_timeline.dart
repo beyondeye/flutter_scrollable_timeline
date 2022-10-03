@@ -10,7 +10,7 @@ class ScrollableTimeline extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
   final double height;
-  final Function(double) onChanged;
+  final Function(double) onChanged; //TODO: rename this method onDragEnd and add also method onDragStart
   final InitialPosition initialPosition;
   final Color backgroundColor;
   final bool showCursor;
@@ -46,7 +46,8 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   // *DARIO* Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late FixedExtentScrollController _scrollController;
-  late int curItem;
+  late int curItem; //TODO: why late? make it instead nullable
+  late double curTime; //TODO: why late? make it instead nullable
   List<Map> valueMap = [];
 
   @override
@@ -130,25 +131,8 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                       //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
                       onSelectedItemChanged: (item) {
                         curItem = item;
-                        int decimalCount = 1;
-                        num fac = pow(10, decimalCount);
-                        valueMap[item]["value"] =
-                            (valueMap[item]["value"] * fac).round() / fac;
-                        widget.onChanged(valueMap[item]["value"]);
-                        for (var i = 0; i < valueMap.length; i++) {
-                          if (i == item && widget.highlightedCurItem) {
-                            valueMap[item]["color"] =
-                                widget.activeItemTextColor;
-                            valueMap[item]["fontSize"] = 15.0;
-                            valueMap[item]["hasBorders"] =
-                                true; //*DARIO* currently "hasBorders" attribute is ignored
-                          } else {
-                            valueMap[i]["color"] = widget.passiveItemsTextColor;
-                            valueMap[i]["fontSize"] = 14.0;
-                            valueMap[i]["hasBorders"] = false;
-                          }
-                        }
-                        setState(() {});
+                        curTime = _scrollController.offset;
+                        widget.onChanged((valueMap[item]["value"] as int).toDouble());
                       },
                       children: valueMap.map((Map curValue) {
                         return ItemWidget(curValue, widget.backgroundColor);
