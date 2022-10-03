@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'item_widget.dart';
 
-enum InitialPosition { start, center, end }
 
 // see https://stackoverflow.com/questions/69960331/constant-constructor-and-function-in-dart
 // anonymous function cannot be const in dart
@@ -14,36 +13,32 @@ void _stub(double t) {}
 class ScrollableTimeline extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
-  final double height;
   final Stream<double>? timeStream;
   final Function(double) onItemSelected;
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
-  final InitialPosition initialPosition;
+  final double height;
   final Color backgroundColor;
   final bool showCursor;
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
-  final bool highlightedCurItem;
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
 
   ScrollableTimeline(
       {required this.lengthSecs,
       required this.stepSecs,
-      required this.height,
       this.timeStream,
       this.onItemSelected= _stub,
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
-      this.initialPosition = InitialPosition.center,
+      required this.height,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
-      this.highlightedCurItem = false,
       this.itemExtent = 60})
       : assert(stepSecs > 0),
         assert(lengthSecs > stepSecs),
@@ -100,22 +95,8 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   }
 
   void setScrollController() {
-    int initialItem;
-    //TODO: instead of initial position here I should pass initial time:
-    //       perhaps don't use FixedExtentScrollController
-    switch (widget.initialPosition) {
-      case InitialPosition.start:
-        initialItem = 0;
-        break;
-      case InitialPosition.center:
-        initialItem = (valueMap.length ~/ 2);
-        break;
-      case InitialPosition.end:
-        initialItem = valueMap.length - 1;
-        break;
-    }
-
-    _scrollController = FixedExtentScrollController(initialItem: initialItem);
+    //TODO don't use FixedExtentScrollController?
+    _scrollController = FixedExtentScrollController(initialItem: 0);
 //    _scrollController.jumpTo(value);
   }
 
