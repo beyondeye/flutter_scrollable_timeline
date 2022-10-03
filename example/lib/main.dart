@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:horizontal_picker/horizontal_picker.dart';
+import 'package:scrollable_timeline/scrollable_timeline.dart';
 
 void main() => runApp(MyApp());
 

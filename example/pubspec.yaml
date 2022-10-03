@@ -1,5 +1,5 @@
-name: horizontal_picker_example 
-description: An example Flutter project with horizontal_picker package.
+name: scrollable_timeline_example
+description: An example Flutter project with scrollable_timeline package.
 version: 1.0.0+1
 publish_to: none
 
@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  horizontal_picker:
+  scrollable_timeline:
     path: ../
 
 dev_dependencies:

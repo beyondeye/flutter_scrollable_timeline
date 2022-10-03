@@ -1,9 +1,9 @@
-name: horizontal_picker
+name: scrollable_timeline
 version: 1.2.0
-description: You can select your value on Horizontal Picker while scrolling on items.
-homepage: https://github.com/leventkantaroglu/
-repository: https://github.com/leventkantaroglu/horizontal_picker
-documentation: https://github.com/leventkantaroglu/horizontal_picker/blob/master/README.md
+description: A scrollable timeline that can be driven by an external time state stream
+homepage: https://github.com/beyondeye/
+repository: https://github.com/beyondeye/flutter_scrollable_timeline
+documentation: https://github.com/beyondeye/flutter_scrollable_timeline/blob/master/README.md
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
