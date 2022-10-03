@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              HorizontalPicker(
+              ScrollableTimeline(
                 lengthSecs: 30,
                 stepSecs: 5,
                 height: 120,
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
               ),
               Divider(),
-              HorizontalPicker(
+              ScrollableTimeline(
                 lengthSecs: 300,
                 stepSecs: 10,
                 height: 120,
@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onChanged: (value) {},
               ),
               Divider(),
-              HorizontalPicker(
+              ScrollableTimeline(
                 lengthSecs: 600,
                 stepSecs: 5,
                 height: 120,

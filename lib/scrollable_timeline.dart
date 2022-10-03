@@ -6,7 +6,7 @@ import 'item_widget.dart';
 
 enum InitialPosition { start, center, end }
 
-class HorizontalPicker extends StatefulWidget {
+class ScrollableTimeline extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
   final double height;
@@ -21,7 +21,7 @@ class HorizontalPicker extends StatefulWidget {
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
 
-  HorizontalPicker(
+  ScrollableTimeline(
       {required this.lengthSecs,
       required this.stepSecs,
       required this.height,
@@ -39,10 +39,10 @@ class HorizontalPicker extends StatefulWidget {
         pixPerSecs=itemExtent/stepSecs;
 
   @override
-  _HorizontalPickerState createState() => _HorizontalPickerState();
+  _ScrollableTimelineState createState() => _ScrollableTimelineState();
 }
 
-class _HorizontalPickerState extends State<HorizontalPicker> {
+class _ScrollableTimelineState extends State<ScrollableTimeline> {
   // *DARIO* Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late FixedExtentScrollController _scrollController;
