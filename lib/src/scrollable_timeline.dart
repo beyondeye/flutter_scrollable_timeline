@@ -99,16 +99,16 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
       // we track longpress event and not drag or pan because for some reason that events
       // are cancelled when scroll is detected in the enclosed widget
         onLongPressDown: (details) {
-          print("*FLT* long press down");
+          //print("*FLT* long press down");
           isDragging = true;
         },
         onLongPressCancel: () {
-          print ("*flt* long press cancel");
+          //print ("*flt* long press cancel");
           isDragging = false;
         },
 
         onLongPressEnd: (details) {
-          print ("*flt* long press end");
+          //print ("*flt* long press end");
           isDragging = false;
         },
 
@@ -118,12 +118,12 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
             if(!isDragging) return false; //allow scroll notification to bubble up
             final tick = widget.pixPerSecs;
             if (scrollNotification is ScrollStartNotification) {
-              print("*SCR* Scroll Start ${_scrollController.offset / tick}");
+              //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
               this.widget.onDragStart(_scrollController.offset / tick);
 //          } else if (scrollNotification is ScrollUpdateNotification) {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
             } else if (scrollNotification is ScrollEndNotification) {
-              print("*SCR* Scroll End ${_scrollController.offset / tick}");
+              //print("*SCR* Scroll End ${_scrollController.offset / tick}");
               this.widget.onDragEnd(_scrollController.offset / tick);
               isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
             }
