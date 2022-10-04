@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'item_widget.dart';
+import 'timeline_item.dart';
 
 
 // see https://stackoverflow.com/questions/69960331/constant-constructor-and-function-in-dart
@@ -48,12 +48,12 @@ class ScrollableTimeline extends StatefulWidget {
 }
 
 class _ScrollableTimelineState extends State<ScrollableTimeline> {
-  // *DARIO* Similar to a standard [ScrollController] but with the added convenience
+  // Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late FixedExtentScrollController _scrollController;
   late int curItem; //TODO: why late? make it instead nullable
   late double curTime; //TODO: why late? make it instead nullable
-  List<ItemWidgetData> itemDatas = [];
+  List<TimelineItemData> itemDatas = [];
   bool isDragging=false;
   StreamSubscription<double>? timeStreamSub;
 
@@ -61,13 +61,12 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   void initState() {
     super.initState();
     isDragging=false; //if isDragging then ignore stream updates about current playing time
-    //*DARIO* the code in this method should be refactore and made more general for different kinds of horizontal pickers?
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
     for (var i = 0; i <= divisions; i++) {
       final secs = t % 60;
       final mins = (t / 60).floor();
-      itemDatas.add(ItemWidgetData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
+      itemDatas.add(TimelineItemData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
       t += widget.stepSecs;
     }
     //TODO initial time value should be provided from outside
@@ -79,7 +78,6 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
       _scrollController.jumpTo(t*widget.pixPerSecs);
     });
   }
-
 
   @override
   void dispose() {
@@ -97,7 +95,9 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   Widget build(BuildContext context) {
     return GestureDetector(
 
-      //we track pan down event, not pan start, because pan start event is not sent immediately
+      // we track  down event, not start, because start event is not sent immediately
+      // we track longpress event and not drag or pan because for some reason that events
+      // are cancelled when scroll is detected in the enclosed widget
         onLongPressDown: (details) {
           print("*FLT* long press down");
           isDragging = true;
@@ -125,7 +125,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
             } else if (scrollNotification is ScrollEndNotification) {
               print("*SCR* Scroll End ${_scrollController.offset / tick}");
               this.widget.onDragEnd(_scrollController.offset / tick);
-              isDragging = false; //this is not redundant: sometimes onLongPressEnd is not detected
+              isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
             }
             return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
           },
@@ -144,52 +144,53 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
           color: widget.backgroundColor,
           //see https://stackoverflow.com/questions/58863899/scroll-finishing-callback-in-flutter
           child: Stack(
-            //*DARIO* use a stack here in order to show the (optional) cursor on top of the scrollview
+            // use a stack here in order to show the (optional) cursor on top of the scrollview
             children: <Widget>[
               RotatedBox(
-                //*DARIO* needed to make ListWheelScrollView horizontal
+                //needed to make ListWheelScrollView horizontal
                 quarterTurns: 3,
                 child: ListWheelScrollView(
                     controller: _scrollController,
+                    // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
-                    //the size in pixel of each item in the scale
+                    // magnification of center item
                     useMagnifier: false,
-                    //*DARIO* magnification of center item
+                    //  magnification of center item (not continuous)
                     magnification: 1.0,
-                    //*DARIO* magnification of center item (not continuous)
+                    // squeeze factor for item size (itemExtent) to show more items
                     squeeze: 1,
-                    //*DARIO* squeeze factor for item size (itemExtent) to show more items
+                    // default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
                     diameterRatio: 2,
-                    //default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
+                    // default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
                     perspective: 0.001,
-                    //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
+
                     onSelectedItemChanged: (item) { //TODO: we actually don't need onSelectedItemChanged (we actually don't need ListWheelScrollView
                       curItem = item;
                       curTime = _scrollController.offset;
                       widget.onItemSelected((itemDatas[item].value).toDouble());
                     },
-                    children: itemDatas.map((ItemWidgetData curValue) {
-                      return ItemWidget(curValue, widget.backgroundColor);
+                    children: itemDatas.map((TimelineItemData curValue) {
+                      return TimelineItem(curValue, widget.backgroundColor);
                     }).toList()),
               ),
               Visibility(
-                //*DARIO* visibility modifier to make the cursor optional
+                // visibility modifier to make the cursor optional
                 visible: widget.showCursor,
                 child: Container(
                   alignment: Alignment.center,
                   //put it at the center
                   padding: const EdgeInsets.all(5),
-                  //*DARIO* this padding define how close to top and bottom border the cursor get
+                  // this padding define how close to top and bottom border the cursor get
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(
                         Radius.circular(
-                            10), //*DARIO* this is the radius at the top and bottom of the cursor: it is almost invisible
+                            10), // this is the radius at the top and bottom of the indicator line: it is almost invisible
                       ),
                       color: widget.cursorColor.withOpacity(
-                          0.3), //*dario* make the cursor semi-transparent
+                          0.3), //  make the indicator line semi-transparent
                     ),
-                    width: 3, //*DARIO* this is the width of the cursor
+                    width: 3, //  this is the width of the indicator line
                   ),
                 ),
               )

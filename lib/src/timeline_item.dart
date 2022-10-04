@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 
-class ItemWidgetData {
+class TimelineItemData {
   int value;
   int valueMins;
   int valueSecs;
   Color color;
   double fontSize;
-  ItemWidgetData({required this.value, required this.valueMins, required this.valueSecs, required this.color, required this.fontSize});
+  TimelineItemData({required this.value, required this.valueMins, required this.valueSecs, required this.color, required this.fontSize});
 }
 
-class ItemWidget extends StatefulWidget {
-  //*DARIO* data used to customize the item:
-  // "value","fontSize","color" in original code
-  //TODO this is very inefficient, although it is very flexible
-  final ItemWidgetData curItem;
-  // *DARIO* potentially independent bg color for each item
+class TimelineItem extends StatefulWidget {
+  final TimelineItemData curItem;
+  // potentially independent bg color for each item
   final Color backgroundColor;
 
-  const ItemWidget(
+  const TimelineItem(
     this.curItem,
     this.backgroundColor,
   {
@@ -25,10 +22,10 @@ class ItemWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ItemWidgetState createState() => _ItemWidgetState();
+  _TimelineItemState createState() => _TimelineItemState();
 }
 
-class _ItemWidgetState extends State<ItemWidget> {
+class _TimelineItemState extends State<TimelineItem> {
   late String minsText, secsText;
 
   @override
@@ -52,18 +49,18 @@ class _ItemWidgetState extends State<ItemWidget> {
           color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: RotatedBox( //*DARIO* this is needed because we rotate ListWheelScrollView to make it horizontal
+        child: RotatedBox( // this is needed because we rotate ListWheelScrollView to make it horizontal
           quarterTurns: 1,
-          child: Column( //*DARIO* we have a column here!
+          child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "|", //*DARIO* this is the top alignment line
+                "|", //this is the top alignment line
                 style: TextStyle(fontSize: 8, color: widget.curItem.color),
               ),
               const SizedBox(height: 5),
-              RichText( //*DARIO* this is the main text  label for this element
+              RichText( //this is the minutes text  label for this element
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -78,7 +75,7 @@ class _ItemWidgetState extends State<ItemWidget> {
                   ],
                 ),
               ),
-              RichText( //*DARIO* this is the main text  label for this element
+              RichText( // this is the seconds text  label for this element
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -92,7 +89,7 @@ class _ItemWidgetState extends State<ItemWidget> {
               ),
               const SizedBox(height: 5),
               Text(
-                "|",
+                "|", // this is the bottom alignment line
                 style: TextStyle(fontSize: 8, color: widget.curItem.color),
               ),
             ],
