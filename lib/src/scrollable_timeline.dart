@@ -95,79 +95,105 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
 
   @override
   Widget build(BuildContext context) {
-    return NotificationListener<ScrollNotification>(
-        onNotification: (scrollNotification) {
-          final tick=widget.pixPerSecs;
-          if (scrollNotification is ScrollStartNotification) {
-//            print("*FLT* Scroll Start ${_scrollController.offset / tick}");
-            isDragging=true;
-            this.widget.onDragStart(_scrollController.offset / tick);
+    return GestureDetector(
+
+      //we track pan down event, not pan start, because pan start event is not sent immediately
+        onLongPressDown: (details) {
+          print("*FLT* long press down");
+          isDragging = true;
+        },
+        onLongPressCancel: () {
+          print ("*flt* long press cancel");
+          isDragging = false;
+        },
+
+        onLongPressEnd: (details) {
+          print ("*flt* long press end");
+          isDragging = false;
+        },
+
+      child: NotificationListener<ScrollNotification>(
+          onNotification: (scrollNotification) {
+            //if this scroll is not user generated ignore the notification
+            if(!isDragging) return false; //allow scroll notification to bubble up
+            final tick = widget.pixPerSecs;
+            if (scrollNotification is ScrollStartNotification) {
+              print("*SCR* Scroll Start ${_scrollController.offset / tick}");
+              this.widget.onDragStart(_scrollController.offset / tick);
 //          } else if (scrollNotification is ScrollUpdateNotification) {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
-          } else if (scrollNotification is ScrollEndNotification) {
-//            print("*FLT*Scroll End ${_scrollController.offset / tick}");
-            this.widget.onDragEnd(_scrollController.offset / tick);
-            isDragging=false;
-          }
-          return true;
-        },
-        child: Container(
-            padding: const EdgeInsets.all(8),
-            height: widget.height,
-            alignment: Alignment.center,
-            color: widget.backgroundColor,
-            //see https://stackoverflow.com/questions/58863899/scroll-finishing-callback-in-flutter
-            child: Stack(
-              //*DARIO* use a stack here in order to show the (optional) cursor on top of the scrollview
-              children: <Widget>[
-                RotatedBox(
-                  //*DARIO* needed to make ListWheelScrollView horizontal
-                  quarterTurns: 3,
-                  child: ListWheelScrollView(
-                      controller: _scrollController,
-                      itemExtent: widget.itemExtent.toDouble(),
-                      //the size in pixel of each item in the scale
-                      useMagnifier: false,
-                      //*DARIO* magnification of center item
-                      magnification: 1.0,
-                      //*DARIO* magnification of center item (not continuous)
-                      squeeze: 1,
-                      //*DARIO* squeeze factor for item size (itemExtent) to show more items
-                      diameterRatio: 2,
-                      //default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
-                      perspective: 0.001,
-                      //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
-                      onSelectedItemChanged: (item) { //TODO: we actually don't need onSelectedItemChanged (we actually don't need ListWheelScrollView
-                        curItem = item;
-                        curTime = _scrollController.offset;
-                        widget.onItemSelected((itemDatas[item].value).toDouble());
-                      },
-                      children: itemDatas.map((ItemWidgetData curValue) {
-                        return ItemWidget(curValue, widget.backgroundColor);
-                      }).toList()),
-                ),
-                Visibility(
-                  //*DARIO* visibility modifier to make the cursor optional
-                  visible: widget.showCursor,
+            } else if (scrollNotification is ScrollEndNotification) {
+              print("*SCR* Scroll End ${_scrollController.offset / tick}");
+              this.widget.onDragEnd(_scrollController.offset / tick);
+              isDragging = false; //this is not redundant: sometimes onLongPressEnd is not detected
+            }
+            return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
+          },
+          child: timeLineBody()
+      )
+    );
+  }
+
+  //------------------------------------------------------------
+  // the actual timeline ui
+  Container timeLineBody() {
+    return Container(
+          padding: const EdgeInsets.all(8),
+          height: widget.height,
+          alignment: Alignment.center,
+          color: widget.backgroundColor,
+          //see https://stackoverflow.com/questions/58863899/scroll-finishing-callback-in-flutter
+          child: Stack(
+            //*DARIO* use a stack here in order to show the (optional) cursor on top of the scrollview
+            children: <Widget>[
+              RotatedBox(
+                //*DARIO* needed to make ListWheelScrollView horizontal
+                quarterTurns: 3,
+                child: ListWheelScrollView(
+                    controller: _scrollController,
+                    itemExtent: widget.itemExtent.toDouble(),
+                    //the size in pixel of each item in the scale
+                    useMagnifier: false,
+                    //*DARIO* magnification of center item
+                    magnification: 1.0,
+                    //*DARIO* magnification of center item (not continuous)
+                    squeeze: 1,
+                    //*DARIO* squeeze factor for item size (itemExtent) to show more items
+                    diameterRatio: 2,
+                    //default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
+                    perspective: 0.001,
+                    //default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
+                    onSelectedItemChanged: (item) { //TODO: we actually don't need onSelectedItemChanged (we actually don't need ListWheelScrollView
+                      curItem = item;
+                      curTime = _scrollController.offset;
+                      widget.onItemSelected((itemDatas[item].value).toDouble());
+                    },
+                    children: itemDatas.map((ItemWidgetData curValue) {
+                      return ItemWidget(curValue, widget.backgroundColor);
+                    }).toList()),
+              ),
+              Visibility(
+                //*DARIO* visibility modifier to make the cursor optional
+                visible: widget.showCursor,
+                child: Container(
+                  alignment: Alignment.center,
+                  //put it at the center
+                  padding: const EdgeInsets.all(5),
+                  //*DARIO* this padding define how close to top and bottom border the cursor get
                   child: Container(
-                    alignment: Alignment.center,
-                    //put it at the center
-                    padding: const EdgeInsets.all(5),
-                    //*DARIO* this padding define how close to top and bottom border the cursor get
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(
-                              10), //*DARIO* this is the radius at the top and bottom of the cursor: it is almost invisible
-                        ),
-                        color: widget.cursorColor.withOpacity(
-                            0.3), //*dario* make the cursor semi-transparent
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(
+                            10), //*DARIO* this is the radius at the top and bottom of the cursor: it is almost invisible
                       ),
-                      width: 3, //*DARIO* this is the width of the cursor
+                      color: widget.cursorColor.withOpacity(
+                          0.3), //*dario* make the cursor semi-transparent
                     ),
+                    width: 3, //*DARIO* this is the width of the cursor
                   ),
-                )
-              ],
-            )));
+                ),
+              )
+            ],
+          ));
   }
 }

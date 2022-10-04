@@ -55,11 +55,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 lengthSecs: 30,
                 stepSecs: 5,
                 height: 120,
-                timeStream: ticker.tick(ticks: 60),
+                timeStream: ticker.tick(ticks: 1000),
                 onItemSelected: (value) {
                   setState(() {
                     newValue = value;
                   });
+                },
+                onDragEnd: (double t) {
+                  print("*FLT* drag detected to target time $t");
+                  ticker.curt = t.roundToDouble();
                 },
               ),
               Divider(),
@@ -72,6 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 activeItemTextColor: Colors.blue.shade800,
                 passiveItemsTextColor: Colors.blue.shade300,
                 onItemSelected: (value) {},
+
               ),
               Divider(),
               ScrollableTimeline(
