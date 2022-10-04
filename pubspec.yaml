@@ -1,6 +1,6 @@
 name: scrollable_timeline
-version: 1.2.0
-description: A scrollable timeline that can be driven by an external time state stream
+version: 1.0.0
+description: A scrollable timeline that can be driven by an external time stream
 homepage: https://github.com/beyondeye/
 repository: https://github.com/beyondeye/flutter_scrollable_timeline
 documentation: https://github.com/beyondeye/flutter_scrollable_timeline/blob/master/README.md

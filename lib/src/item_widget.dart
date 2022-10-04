@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 
+class ItemWidgetData {
+  int value;
+  int valueMins;
+  int valueSecs;
+  Color color;
+  double fontSize;
+  ItemWidgetData({required this.value, required this.valueMins, required this.valueSecs, required this.color, required this.fontSize});
+}
+
 class ItemWidget extends StatefulWidget {
   //*DARIO* data used to customize the item:
   // "value","fontSize","color" in original code
   //TODO this is very inefficient, although it is very flexible
-  final Map curItem;
+  final ItemWidgetData curItem;
   // *DARIO* potentially independent bg color for each item
   final Color backgroundColor;
 
@@ -26,10 +35,9 @@ class _ItemWidgetState extends State<ItemWidget> {
   void initState() {
     super.initState();
 
-    //*DARIO* TODO *IMPORTANT* this code here must be modified in order to customize how
-    //        value is translated to actual text to shoiw
-    secsText = widget.curItem["value_s"].toString();
-    minsText = widget.curItem["value_m"].toString();
+    final curItem= widget.curItem;
+    secsText = curItem.valueSecs.toString();
+    minsText = curItem.valueMins.toString();
   }
 
   @override
@@ -52,7 +60,7 @@ class _ItemWidgetState extends State<ItemWidget> {
             children: <Widget>[
               Text(
                 "|", //*DARIO* this is the top alignment line
-                style: TextStyle(fontSize: 8, color: widget.curItem["color"]),
+                style: TextStyle(fontSize: 8, color: widget.curItem.color),
               ),
               const SizedBox(height: 5),
               RichText( //*DARIO* this is the main text  label for this element
@@ -61,8 +69,8 @@ class _ItemWidgetState extends State<ItemWidget> {
                     TextSpan(
                       text: minsText,
                       style: TextStyle(
-                          fontSize: widget.curItem["fontSize"],
-                          color: widget.curItem["color"],
+                          fontSize: widget.curItem.fontSize,
+                          color: widget.curItem.color,
                           fontWeight: secsText == "0"
                               ? FontWeight.w800
                               : FontWeight.w400),
@@ -76,8 +84,8 @@ class _ItemWidgetState extends State<ItemWidget> {
                     TextSpan(
                       text: secsText,
                       style: TextStyle(
-                          fontSize: widget.curItem["fontSize"],
-                          color: widget.curItem["color"]),
+                          fontSize: widget.curItem.fontSize,
+                          color: widget.curItem.color),
                     )
                   ],
                 ),
@@ -85,7 +93,7 @@ class _ItemWidgetState extends State<ItemWidget> {
               const SizedBox(height: 5),
               Text(
                 "|",
-                style: TextStyle(fontSize: 8, color: widget.curItem["color"]),
+                style: TextStyle(fontSize: 8, color: widget.curItem.color),
               ),
             ],
           ),
