@@ -124,7 +124,10 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
             } else if (scrollNotification is ScrollEndNotification) {
               //print("*SCR* Scroll End ${_scrollController.offset / tick}");
-              this.widget.onDragEnd(_scrollController.offset / tick);
+              //TODO I need a way to know the width of the widget and how many items are shown in order
+              //     to now what is the central position currently shown: the 3*widget.itemExtent here
+              //     is not correct. it also depends if and how many left and right padding item i will add
+              this.widget.onDragEnd((3*widget.itemExtent + _scrollController.offset) / tick);
               isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
             }
             return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)

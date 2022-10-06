@@ -55,7 +55,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                 lengthSecs: 300,
                 stepSecs: 10,
                 height: 120,
-                showCursor: false,
+                showCursor: true,
                 backgroundColor: Colors.lightBlue.shade50,
                 activeItemTextColor: Colors.blue.shade800,
                 passiveItemsTextColor: Colors.blue.shade300,
