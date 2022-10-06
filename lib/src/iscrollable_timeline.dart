@@ -7,7 +7,7 @@ abstract class IScrollableTimeLine {
   abstract final double insideVertPadding;
   abstract final Color backgroundColor;
   abstract final bool showCursor;
-  abstract final bool showMins;
+  abstract final bool showMinutes;
   abstract final Color cursorColor;
   abstract final Color activeItemTextColor;
   abstract final Color passiveItemsTextColor;

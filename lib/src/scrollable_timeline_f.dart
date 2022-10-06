@@ -27,7 +27,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final double insideVertPadding;
   final Color backgroundColor;
   final bool showCursor;
-  final bool showMins;
+  final bool showMinutes;
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
@@ -46,7 +46,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       this.nPadItems=3,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
-      this.showMins = true,
+      this.showMinutes = true,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
@@ -76,7 +76,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     for(var i=0; i<widget.nPadItems; i++) {
       itemDatas.add(TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14));
     }
-    if(widget.showMins) {
+    if(widget.showMinutes) {
       for (var i = 0; i <= divisions; i++) {
         final secs = t % 60;
         final mins = (t / 60).floor();
@@ -84,7 +84,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
         t += widget.stepSecs;
       }
     } else
-    {
+    { //showMinutes==false
       for (var i = 0; i <= divisions; i++) {
         final secs = t % 60;
         itemDatas.add(TimelineItemData(t:t, tMins: null, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
@@ -111,7 +111,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     double w = context.size?.width ?? 0.0;
     return (offset + (w/2 - widget.itemExtent*(0.5+widget.nPadItems)))/widget.pixPerSecs;
   }
-  //scrolloffs=t*pixPerSecs
   @override
   void dispose() {
     super.dispose();

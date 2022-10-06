@@ -19,7 +19,7 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   final double insideVertPadding;
   final Color backgroundColor;
   final bool showCursor;
-  final bool showMins;
+  final bool showMinutes;
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
@@ -38,7 +38,7 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
       this.insideVertPadding=10,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
-      this.showMins = true,
+      this.showMinutes = true,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
@@ -67,7 +67,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     isDragging=false; //if isDragging then ignore stream updates about current playing time
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
-    if(widget.showMins) {
+    if(widget.showMinutes) {
       for (var i = 0; i <= divisions; i++) {
         final secs = t % 60;
         final mins = (t / 60).floor();
@@ -75,7 +75,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
         t += widget.stepSecs;
       }
     } else
-    {
+    { //showMinutes==false
       for (var i = 0; i <= divisions; i++) {
         final secs = t % 60;
         itemDatas.add(TimelineItemData(t:t, tMins: null, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));

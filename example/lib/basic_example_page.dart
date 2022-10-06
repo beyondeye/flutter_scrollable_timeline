@@ -82,7 +82,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                   insideVertPadding: 10,
                   timeStream: ticker3.tick(ticks: 1000),
                   showCursor: true,
-                  showMins: false,
+                  showMinutes: false,
                   backgroundColor: Colors.lightBlue.shade50,
                   activeItemTextColor: Colors.blue.shade800,
                   passiveItemsTextColor: Colors.blue.shade300,
