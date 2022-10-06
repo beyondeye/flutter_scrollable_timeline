@@ -17,6 +17,7 @@ class ScrollableTimeline extends StatefulWidget {
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
+  final double insideVertPadding;
   final Color backgroundColor;
   final bool showCursor;
   final bool showMins;
@@ -34,7 +35,8 @@ class ScrollableTimeline extends StatefulWidget {
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
-      this.backgroundColor = Colors.white,
+        this.insideVertPadding=10,
+        this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.showMins = true,
       this.cursorColor = Colors.red,
@@ -96,7 +98,6 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   }
 
   void setScrollController() {
-    //TODO don't use FixedExtentScrollController?
     _scrollController = FixedExtentScrollController(initialItem: 0);
 //    _scrollController.jumpTo(value);
   }
@@ -180,7 +181,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                       widget.onItemSelected((itemDatas[item].t).toDouble());
                     },
                     children: itemDatas.map((TimelineItemData curValue) {
-                      return TimelineItem(curValue, widget.backgroundColor);
+                      return TimelineItem(curValue, widget.backgroundColor,widget.insideVertPadding);
                     }).toList()),
               ),
               Visibility(

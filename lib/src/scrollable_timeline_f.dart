@@ -23,6 +23,7 @@ class ScrollableTimelineF extends StatefulWidget {
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
+  final double insideVertPadding;
   final int nPadItems;
   final Color backgroundColor;
   final bool showCursor;
@@ -40,6 +41,7 @@ class ScrollableTimelineF extends StatefulWidget {
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
+      this.insideVertPadding=10,
       this.nPadItems=3,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
@@ -209,7 +211,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
                     // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
                     children: itemDatas.map((TimelineItemData curValue) {
-                      return TimelineItemF(curValue, widget.backgroundColor);
+                      return TimelineItemF(curValue, widget.backgroundColor,widget.insideVertPadding);
                     }).toList()),
               Visibility(
                 // visibility modifier to make the cursor optional

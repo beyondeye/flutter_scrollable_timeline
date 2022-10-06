@@ -41,6 +41,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                 lengthSecs: 30,
                 stepSecs: 5,
                 height: 120,
+                insideVertPadding: 10,
                 timeStream: ticker.tick(ticks: 1000),
                 onItemSelected: (value) {
                   setState(() {
@@ -58,6 +59,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                 lengthSecs: 100,
                 stepSecs: 10,
                 height: 120,
+                insideVertPadding: 10,
                 timeStream: ticker2.tick(ticks: 1000),
                 showCursor: true,
                 backgroundColor: Colors.lightBlue.shade50,
@@ -77,6 +79,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                   lengthSecs: 100,
                   stepSecs: 2,
                   height: 120,
+                  insideVertPadding: 10,
                   timeStream: ticker3.tick(ticks: 1000),
                   showCursor: true,
                   showMins: false,

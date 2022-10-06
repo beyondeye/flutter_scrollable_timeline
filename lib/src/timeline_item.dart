@@ -4,10 +4,12 @@ class TimelineItem extends StatefulWidget {
   final TimelineItemData curItem;
   // potentially independent bg color for each item
   final Color backgroundColor;
+  final double insideVertPadding;
 
   const TimelineItem(
     this.curItem,
     this.backgroundColor,
+    this.insideVertPadding,
   {
     Key? key,
   }) : super(key: key);
@@ -33,9 +35,9 @@ class _TimelineItemState extends State<TimelineItem> {
   Widget build(BuildContext context) {
     return FittedBox(
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 1,
+        padding:  EdgeInsets.symmetric(
+          horizontal: widget.insideVertPadding, //this actual vertical padding, after rotation
+          vertical: 1, //this actual horizontal padding after rotation
         ),
         decoration: BoxDecoration(
           color: widget.backgroundColor,
