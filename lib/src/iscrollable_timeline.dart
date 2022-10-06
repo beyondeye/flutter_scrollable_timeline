@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'timeline_item_data.dart';
 
 abstract class IScrollableTimeLine {
   abstract final int lengthSecs;
@@ -39,3 +40,56 @@ Widget indicatorWidget(IScrollableTimeLine widget) =>
         ),
       ),
     );
+
+Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData curItem) {
+  final String secsText = secsText_?? curItem.tSecs.toString();
+  final String? minsText = minsText_ ?? curItem.tMins?.toString();
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[
+      Text(
+        "|", //this is the top alignment line
+        style: TextStyle(fontSize: 8, color: curItem.color),
+      ),
+      ...((minsText == null)
+          ? [] //nothing to the colum if minsText is null
+          : [ //add minutes text if minsText not null
+        const SizedBox(height: 5),
+        RichText(
+          //this is the minutes text  label for this element
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: minsText,
+                style: TextStyle(
+                    fontSize: curItem.fontSize,
+                    color: curItem.color,
+                    fontWeight: secsText == "0"
+                        ? FontWeight.w800
+                        : FontWeight.w400),
+              ),
+            ],
+          ),
+        ),
+      ]),
+      RichText( // this is the seconds text  label for this element
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: secsText,
+              style: TextStyle(
+                  fontSize: curItem.fontSize,
+                  color: curItem.color),
+            )
+          ],
+        ),
+      ),
+      const SizedBox(height: 5),
+      Text(
+        "|", // this is the bottom alignment line
+        style: TextStyle(fontSize: 8, color: curItem.color),
+      ),
+    ],
+  );
+}
