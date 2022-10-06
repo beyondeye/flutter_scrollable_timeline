@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'iscrollable_timeline.dart';
 import 'timeline_item_data.dart';
 import 'timeline_item_f.dart';
 
@@ -16,7 +17,7 @@ void _stub(double t) {}
 ///        center. the value of required pad items is  <= 0.5*(widget width)/(itemExtent)
 ///        TODO: wait for when widget width is available (see for https://github.com/ayham95/Measured-Size/blob/main/lib/measured_size.dart)
 ///              and automatically define the required number of pad items
-class ScrollableTimelineF extends StatefulWidget {
+class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine {
   final int lengthSecs;
   final int stepSecs;
   final Stream<double>? timeStream;
@@ -99,8 +100,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
       if(isDragging) return; //ignore time update if dragging
-      final clamped_t=t.clamp(0.0, widget.lengthSecs.toDouble());
-      _scrollController.jumpTo(timeToScrollOffset(clamped_t));
+      final tClamped=t.clamp(0.0, widget.lengthSecs.toDouble());
+      _scrollController.jumpTo(timeToScrollOffset(tClamped));
     });
   }
 
@@ -213,28 +214,11 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
                     children: itemDatas.map((TimelineItemData curValue) {
                       return TimelineItemF(curValue, widget.backgroundColor,widget.insideVertPadding);
                     }).toList()),
-              Visibility(
-                // visibility modifier to make the cursor optional
-                visible: widget.showCursor,
-                child: Container(
-                  alignment: Alignment.center,
-                  //put it at the center
-                  padding: const EdgeInsets.all(5),
-                  // this padding define how close to top and bottom border the cursor get
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(
-                            10), // this is the radius at the top and bottom of the indicator line: it is almost invisible
-                      ),
-                      color: widget.cursorColor.withOpacity(
-                          0.3), //  make the indicator line semi-transparent
-                    ),
-                    width: 3, //  this is the width of the indicator line
-                  ),
-                ),
-              )
+              indicatorWidget(widget)
             ],
           ));
   }
 }
+
+
+

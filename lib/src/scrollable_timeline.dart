@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'iscrollable_timeline.dart';
 import 'timeline_item_data.dart';
 import 'timeline_item.dart';
-
 
 // see https://stackoverflow.com/questions/69960331/constant-constructor-and-function-in-dart
 // anonymous function cannot be const in dart
 void _stub(double t) {}
 
-class ScrollableTimeline extends StatefulWidget {
+class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   final int lengthSecs;
   final int stepSecs;
   final Stream<double>? timeStream;
@@ -86,8 +86,8 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
       if(isDragging) return; //ignore time update if dragging
-      final clamped_t=t.clamp(0.0, widget.lengthSecs.toDouble());
-      _scrollController.jumpTo(clamped_t*widget.pixPerSecs);
+      final tClamped=t.clamp(0.0, widget.lengthSecs.toDouble());
+      _scrollController.jumpTo(tClamped*widget.pixPerSecs);
     });
   }
 
@@ -184,27 +184,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                       return TimelineItem(curValue, widget.backgroundColor,widget.insideVertPadding);
                     }).toList()),
               ),
-              Visibility(
-                // visibility modifier to make the cursor optional
-                visible: widget.showCursor,
-                child: Container(
-                  alignment: Alignment.center,
-                  //put it at the center
-                  padding: const EdgeInsets.all(5),
-                  // this padding define how close to top and bottom border the cursor get
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(
-                            10), // this is the radius at the top and bottom of the indicator line: it is almost invisible
-                      ),
-                      color: widget.cursorColor.withOpacity(
-                          0.3), //  make the indicator line semi-transparent
-                    ),
-                    width: 3, //  this is the width of the indicator line
-                  ),
-                ),
-              )
+              indicatorWidget(widget)
             ],
           ));
   }
