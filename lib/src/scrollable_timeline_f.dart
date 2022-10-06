@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'timeline_item_data.dart';
 import 'timeline_item_f.dart';
 
@@ -144,7 +145,28 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 //              print("*SCR* shown items: ${shown_items}");
               //print("*SCR* Scroll End ${_scrollController.offset / tick}");
               //TODO: if drag outside bounds clip back inside bounds
-              this.widget.onDragEnd(scrollOffsetToTime(_scrollController.offset));
+              double t=scrollOffsetToTime(_scrollController.offset);
+              var isClipped=false;
+              if(t<0) {
+                t = 0;
+                isClipped = true;
+              }
+              if(t>widget.lengthSecs) {
+                t=widget.lengthSecs.toDouble();
+                isClipped=true;
+              }
+              //TODO the following code forcing back _scrollController to
+              // a valid position is not always necessary because _scrollController
+              // itself is driven by the current time and if the clippedT is feed
+              // back in widget.timeStream, then the clipping will happen automatically
+              if(isClipped) {
+                final clippedT=timeToScrollOffset(t);
+                SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+                  //the following line will cause stack overflow exception if run directly in onNotification() callback
+                  _scrollController.jumpTo(clippedT);
+                });
+              }
+              this.widget.onDragEnd(t);
               isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
             }
             return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
