@@ -13,7 +13,6 @@ class ScrollableTimelineF extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
   final Stream<double>? timeStream;
-  final Function(double) onItemSelected;
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
@@ -29,7 +28,6 @@ class ScrollableTimelineF extends StatefulWidget {
       {required this.lengthSecs,
       required this.stepSecs,
       this.timeStream,
-      this.onItemSelected= _stub,
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
@@ -114,6 +112,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 
       child: NotificationListener<ScrollNotification>(
           onNotification: (scrollNotification) {
+            //TODO currently this gives the wrong results
+            // I need to add some empty items at the beginning and compensate for them
             //if this scroll is not user generated ignore the notification
             if(!isDragging) return false; //allow scroll notification to bubble up
             final tick = widget.pixPerSecs;
