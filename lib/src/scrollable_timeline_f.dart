@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'timeline_item_data.dart';
-import 'timeline_item.dart';
+import 'timeline_item_f.dart';
 
 
 // see https://stackoverflow.com/questions/69960331/constant-constructor-and-function-in-dart
 // anonymous function cannot be const in dart
 void _stub(double t) {}
 
-class ScrollableTimeline extends StatefulWidget {
+class ScrollableTimelineF extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
   final Stream<double>? timeStream;
@@ -25,7 +25,7 @@ class ScrollableTimeline extends StatefulWidget {
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
 
-  ScrollableTimeline(
+  ScrollableTimelineF(
       {required this.lengthSecs,
       required this.stepSecs,
       this.timeStream,
@@ -44,13 +44,13 @@ class ScrollableTimeline extends StatefulWidget {
         pixPerSecs=itemExtent/stepSecs;
 
   @override
-  _ScrollableTimelineState createState() => _ScrollableTimelineState();
+  _ScrollableTimelineFState createState() => _ScrollableTimelineFState();
 }
 
-class _ScrollableTimelineState extends State<ScrollableTimeline> {
+class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   // Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
-  late FixedExtentScrollController _scrollController;
+  late ScrollController _scrollController;
   late int curItem; //TODO: why late? make it instead nullable
   late double curTime; //TODO: why late? make it instead nullable
   List<TimelineItemData> itemDatas = [];
@@ -87,7 +87,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
 
   void setScrollController() {
     //TODO don't use FixedExtentScrollController?
-    _scrollController = FixedExtentScrollController(initialItem: 0);
+    _scrollController = ScrollController(initialScrollOffset: 0);
 //    _scrollController.jumpTo(value);
   }
 
@@ -148,29 +148,14 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
             children: <Widget>[
               RotatedBox(
                 //needed to make ListWheelScrollView horizontal
-                quarterTurns: 3,
-                child: ListWheelScrollView(
+                quarterTurns: 0,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
                     controller: _scrollController,
                     // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
-                    // magnification of center item
-                    useMagnifier: false,
-                    //  magnification of center item (not continuous)
-                    magnification: 1.0,
-                    // squeeze factor for item size (itemExtent) to show more items
-                    squeeze: 1,
-                    // default is 2.0 (the smaller it is the smallest is the wheel diameter (more compression at border
-                    diameterRatio: 2,
-                    // default is 0.003 (must be 0<p <0.01) (how farthest item in the circle are shown with reduced size
-                    perspective: 0.001,
-
-                    onSelectedItemChanged: (item) { //TODO: we actually don't need onSelectedItemChanged (we actually don't need ListWheelScrollView
-                      curItem = item;
-                      curTime = _scrollController.offset;
-                      widget.onItemSelected((itemDatas[item].value).toDouble());
-                    },
                     children: itemDatas.map((TimelineItemData curValue) {
-                      return TimelineItem(curValue, widget.backgroundColor);
+                      return TimelineItemF(curValue, widget.backgroundColor);
                     }).toList()),
               ),
               Visibility(

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'timeline_item_data.dart';
-class TimelineItem extends StatefulWidget {
+
+class TimelineItemF extends StatefulWidget {
   final TimelineItemData curItem;
   // potentially independent bg color for each item
   final Color backgroundColor;
 
-  const TimelineItem(
+  const TimelineItemF(
     this.curItem,
     this.backgroundColor,
   {
@@ -13,10 +14,10 @@ class TimelineItem extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TimelineItemState createState() => _TimelineItemState();
+  _TimelineItemFState createState() => _TimelineItemFState();
 }
 
-class _TimelineItemState extends State<TimelineItem> {
+class _TimelineItemFState extends State<TimelineItemF> {
   late String minsText, secsText;
 
   @override
@@ -41,7 +42,7 @@ class _TimelineItemState extends State<TimelineItem> {
           borderRadius: BorderRadius.circular(10),
         ),
         child: RotatedBox( // this is needed because we rotate ListWheelScrollView to make it horizontal
-          quarterTurns: 1,
+          quarterTurns: 0,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
