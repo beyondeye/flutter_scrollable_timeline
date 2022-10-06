@@ -22,7 +22,8 @@ class BasicExamplePage extends StatefulWidget {
 }
 
 class _BasicExamplePageState extends State<BasicExamplePage> {
-  double? newValue;
+  double? timeline1Value;
+  double? timeline2Value;
   final ticker= _Ticker(0.0, 30.0);
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                 timeStream: ticker.tick(ticks: 1000),
                 onItemSelected: (value) {
                   setState(() {
-                    newValue = value;
+                    timeline1Value = value;
                   });
                 },
                 onDragEnd: (double t) {
@@ -48,8 +49,9 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                   ticker.curt = t.roundToDouble();
                 },
               ),
+              Text(timeline1Value.toString()),
               Divider(),
-              ScrollableTimeline(
+              ScrollableTimelineF(
                 lengthSecs: 300,
                 stepSecs: 10,
                 height: 120,
@@ -57,9 +59,15 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                 backgroundColor: Colors.lightBlue.shade50,
                 activeItemTextColor: Colors.blue.shade800,
                 passiveItemsTextColor: Colors.blue.shade300,
-                onItemSelected: (value) {},
+                onDragEnd: (double t) {
+                  print("*FLT* drag detected for ScrollableTimelineF to target time $t");
+                  setState(() {
+                    timeline2Value = t;
+                  });
+                },
 
               ),
+              Text(timeline2Value.toString()),
               Divider(),
               ScrollableTimeline(
                 lengthSecs: 600,
@@ -73,7 +81,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
 
                 },
               ),
-              Text(newValue.toString())
+
             ],
           ),
         ),
