@@ -41,8 +41,6 @@ class _TimelineItemFState extends State<TimelineItemF> {
           color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: RotatedBox( // this is needed because we rotate ListWheelScrollView to make it horizontal
-          quarterTurns: 0,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -87,7 +85,6 @@ class _TimelineItemFState extends State<TimelineItemF> {
             ],
           ),
         ),
-      ),
     );
   }
 }
