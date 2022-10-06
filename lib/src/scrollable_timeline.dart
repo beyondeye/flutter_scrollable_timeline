@@ -13,7 +13,6 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   final int lengthSecs;
   final int stepSecs;
   final Stream<double>? timeStream;
-  final Function(double) onItemSelected;
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
@@ -26,6 +25,7 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   final Color passiveItemsTextColor;
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
+  final Function(double) onItemSelected;
 
   ScrollableTimeline(
       {required this.lengthSecs,
@@ -35,8 +35,8 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
-        this.insideVertPadding=10,
-        this.backgroundColor = Colors.white,
+      this.insideVertPadding=10,
+      this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.showMins = true,
       this.cursorColor = Colors.red,

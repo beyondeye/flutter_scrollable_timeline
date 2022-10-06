@@ -13,6 +13,8 @@ abstract class IScrollableTimeLine {
   abstract final Color passiveItemsTextColor;
   abstract final int itemExtent; //width in pix of each item
   abstract final double pixPerSecs;
+  abstract final Function(double) onDragStart;
+  abstract final Function(double) onDragEnd;
 }
 
 Widget indicatorWidget(IScrollableTimeLine widget) =>

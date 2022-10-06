@@ -25,7 +25,6 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final Function(double) onDragEnd;
   final double height;
   final double insideVertPadding;
-  final int nPadItems;
   final Color backgroundColor;
   final bool showCursor;
   final bool showMins;
@@ -34,6 +33,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final Color passiveItemsTextColor;
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
+  final int nPadItems;
 
   ScrollableTimelineF(
       {required this.lengthSecs,
@@ -63,8 +63,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   // Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late ScrollController _scrollController;
-  late int curItem; //TODO: why late? make it instead nullable
-  late double curTime; //TODO: why late? make it instead nullable
   List<TimelineItemData> itemDatas = [];
   bool isDragging=false;
   StreamSubscription<double>? timeStreamSub;
