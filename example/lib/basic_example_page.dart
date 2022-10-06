@@ -24,8 +24,8 @@ class BasicExamplePage extends StatefulWidget {
 class _BasicExamplePageState extends State<BasicExamplePage> {
   double? timeline1Value;
   double? timeline2Value;
-  final ticker= _Ticker(0.0, 30.0);
-  final ticker2= _Ticker(0.0, 30.0);
+  final ticker= _Ticker(0.0, 100.0);
+  final ticker2= _Ticker(0.0, 100.0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,7 +53,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
               Text(timeline1Value.toString()),
               Divider(),
               ScrollableTimelineF(
-                lengthSecs: 300,
+                lengthSecs: 50,
                 stepSecs: 2,
                 height: 120,
                 timeStream: ticker2.tick(ticks: 1000),
