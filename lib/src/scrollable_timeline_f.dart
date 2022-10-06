@@ -51,6 +51,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   late ScrollController _scrollController;
   late int curItem; //TODO: why late? make it instead nullable
   late double curTime; //TODO: why late? make it instead nullable
+  int nleftpaditems=3; //TODO number pad items should be parameters and/or related to widget width
+  int nrightpaditems=3; //TODO number pad items should be parameters and/or related to widget width
   List<TimelineItemData> itemDatas = [];
   bool isDragging=false;
   StreamSubscription<double>? timeStreamSub;
@@ -61,11 +63,17 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     isDragging=false; //if isDragging then ignore stream updates about current playing time
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
+    for(var i=0; i<nleftpaditems; i++) {
+      itemDatas.add(TimelineItemData(value: 0, valueMins: 0, valueSecs: 0, color: widget.backgroundColor, fontSize: 14));
+    }
     for (var i = 0; i <= divisions; i++) {
       final secs = t % 60;
       final mins = (t / 60).floor();
       itemDatas.add(TimelineItemData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
       t += widget.stepSecs;
+    }
+    for(var i=0; i<nrightpaditems; i++) {
+      itemDatas.add(TimelineItemData(value: 0, valueMins: 0, valueSecs: 0, color: widget.backgroundColor, fontSize: 14));
     }
     //TODO initial time value should be provided from outside
     setScrollController();
@@ -73,10 +81,19 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     timeStreamSub = widget.timeStream?.listen((t) {
       if(isDragging) return; //ignore time update if dragging
       //TODO check if t in the range of the scrollable timeline: if not then clip position to inside the allowed range
-      _scrollController.jumpTo(t*widget.pixPerSecs);
+      _scrollController.jumpTo(timeToScrollOffset(t));
     });
   }
 
+  double timeToScrollOffset(double t) {
+    double w = context.size?.width ?? 0.0;
+    return t*widget.pixPerSecs - (w/2 - widget.itemExtent*(0.5+nleftpaditems));
+  }
+  double scrollOffsetToTime(double offset) {
+    double w = context.size?.width ?? 0.0;
+    return (offset + (w/2 - widget.itemExtent*(0.5+nleftpaditems)))/widget.pixPerSecs;
+  }
+  //scrolloffs=t*pixPerSecs
   @override
   void dispose() {
     super.dispose();
@@ -116,18 +133,18 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
             // I need to add some empty items at the beginning and compensate for them
             //if this scroll is not user generated ignore the notification
             if(!isDragging) return false; //allow scroll notification to bubble up
-            final tick = widget.pixPerSecs;
+            //final tick = widget.pixPerSecs;
             if (scrollNotification is ScrollStartNotification) {
               //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
-              this.widget.onDragStart(_scrollController.offset / tick);
+              this.widget.onDragStart(_scrollController.offset / widget.pixPerSecs);
 //          } else if (scrollNotification is ScrollUpdateNotification) {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
             } else if (scrollNotification is ScrollEndNotification) {
+//              print("*SCR* scroll offs: ${_scrollController.offset}");
+//              print("*SCR* shown items: ${shown_items}");
               //print("*SCR* Scroll End ${_scrollController.offset / tick}");
-              //TODO I need a way to know the width of the widget and how many items are shown in order
-              //     to now what is the central position currently shown: the 3*widget.itemExtent here
-              //     is not correct. it also depends if and how many left and right padding item i will add
-              this.widget.onDragEnd((3*widget.itemExtent + _scrollController.offset) / tick);
+              //TODO: if drag outside bounds clip back inside bounds
+              this.widget.onDragEnd(scrollOffsetToTime(_scrollController.offset));
               isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
             }
             return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
@@ -141,7 +158,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   // the actual timeline ui
   Container timeLineBody() {
     return Container(
-          padding: const EdgeInsets.all(8),
+         //important: if padding is changed, then need to review scrollOffsetToTime() and
+          padding: const EdgeInsets.all(0),
           height: widget.height,
           alignment: Alignment.center,
           color: widget.backgroundColor,

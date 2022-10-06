@@ -25,6 +25,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
   double? timeline1Value;
   double? timeline2Value;
   final ticker= _Ticker(0.0, 30.0);
+  final ticker2= _Ticker(0.0, 30.0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,14 +54,16 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
               Divider(),
               ScrollableTimelineF(
                 lengthSecs: 300,
-                stepSecs: 10,
+                stepSecs: 2,
                 height: 120,
+                timeStream: ticker2.tick(ticks: 1000),
                 showCursor: true,
                 backgroundColor: Colors.lightBlue.shade50,
                 activeItemTextColor: Colors.blue.shade800,
                 passiveItemsTextColor: Colors.blue.shade300,
                 onDragEnd: (double t) {
                   print("*FLT* drag detected for ScrollableTimelineF to target time $t");
+                  ticker2.curt = t.roundToDouble();
                   setState(() {
                     timeline2Value = t;
                   });
