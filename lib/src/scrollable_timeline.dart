@@ -69,7 +69,6 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
       itemDatas.add(TimelineItemData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
       t += widget.stepSecs;
     }
-    //TODO initial time value should be provided from outside
     setScrollController();
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {

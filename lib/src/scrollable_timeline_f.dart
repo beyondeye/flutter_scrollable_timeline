@@ -10,6 +10,12 @@ import 'timeline_item_f.dart';
 // anonymous function cannot be const in dart
 void _stub(double t) {}
 
+/// nPadItems are empty items put at the beginning and end of real time items
+///        they are needed in order to allow to scroll to very beginning time
+///        and very end time items that, since the indicator is positioned in the
+///        center. the value of required pad items is  <= 0.5*(widget width)/(itemExtent)
+///        TODO: wait for when widget width is available (see for https://github.com/ayham95/Measured-Size/blob/main/lib/measured_size.dart)
+///              and automatically define the required number of pad items
 class ScrollableTimelineF extends StatefulWidget {
   final int lengthSecs;
   final int stepSecs;
@@ -17,6 +23,7 @@ class ScrollableTimelineF extends StatefulWidget {
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
+  final int nPadItems;
   final Color backgroundColor;
   final bool showCursor;
   final Color cursorColor;
@@ -32,6 +39,7 @@ class ScrollableTimelineF extends StatefulWidget {
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
+      this.nPadItems=3,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.cursorColor = Colors.red,
@@ -52,8 +60,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   late ScrollController _scrollController;
   late int curItem; //TODO: why late? make it instead nullable
   late double curTime; //TODO: why late? make it instead nullable
-  int nleftpaditems=3; //TODO number pad items should be parameters and/or related to widget width
-  int nrightpaditems=3; //TODO number pad items should be parameters and/or related to widget width
   List<TimelineItemData> itemDatas = [];
   bool isDragging=false;
   StreamSubscription<double>? timeStreamSub;
@@ -64,7 +70,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     isDragging=false; //if isDragging then ignore stream updates about current playing time
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
-    for(var i=0; i<nleftpaditems; i++) {
+    for(var i=0; i<widget.nPadItems; i++) {
       itemDatas.add(TimelineItemData(value: 0, valueMins: 0, valueSecs: 0, color: widget.backgroundColor, fontSize: 14));
     }
     for (var i = 0; i <= divisions; i++) {
@@ -73,10 +79,9 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
       itemDatas.add(TimelineItemData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
       t += widget.stepSecs;
     }
-    for(var i=0; i<nrightpaditems; i++) {
+    for(var i=0; i<widget.nPadItems; i++) {
       itemDatas.add(TimelineItemData(value: 0, valueMins: 0, valueSecs: 0, color: widget.backgroundColor, fontSize: 14));
     }
-    //TODO initial time value should be provided from outside
     setScrollController();
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
@@ -88,11 +93,11 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 
   double timeToScrollOffset(double t) {
     double w = context.size?.width ?? 0.0;
-    return t*widget.pixPerSecs - (w/2 - widget.itemExtent*(0.5+nleftpaditems));
+    return t*widget.pixPerSecs - (w/2 - widget.itemExtent*(0.5+widget.nPadItems));
   }
   double scrollOffsetToTime(double offset) {
     double w = context.size?.width ?? 0.0;
-    return (offset + (w/2 - widget.itemExtent*(0.5+nleftpaditems)))/widget.pixPerSecs;
+    return (offset + (w/2 - widget.itemExtent*(0.5+widget.nPadItems)))/widget.pixPerSecs;
   }
   //scrolloffs=t*pixPerSecs
   @override
@@ -102,8 +107,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   }
 
   void setScrollController() {
-    //TODO don't use FixedExtentScrollController?
     _scrollController = ScrollController(initialScrollOffset: 0);
+    //the following is not needed: we listern from timeStream instead
 //    _scrollController.jumpTo(value);
   }
 
@@ -130,7 +135,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 
       child: NotificationListener<ScrollNotification>(
           onNotification: (scrollNotification) {
-            //TODO currently this gives the wrong results
             // I need to add some empty items at the beginning and compensate for them
             //if this scroll is not user generated ignore the notification
             if(!isDragging) return false; //allow scroll notification to bubble up
@@ -144,7 +148,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 //              print("*SCR* scroll offs: ${_scrollController.offset}");
 //              print("*SCR* shown items: ${shown_items}");
               //print("*SCR* Scroll End ${_scrollController.offset / tick}");
-              //TODO: if drag outside bounds clip back inside bounds
               double t=scrollOffsetToTime(_scrollController.offset);
               var isClipped=false;
               if(t<0) {
