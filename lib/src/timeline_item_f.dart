@@ -18,15 +18,16 @@ class TimelineItemF extends StatefulWidget {
 }
 
 class _TimelineItemFState extends State<TimelineItemF> {
-  late String minsText, secsText;
+  late String? minsText;
+  late String secsText;
 
   @override
   void initState() {
     super.initState();
 
     final curItem= widget.curItem;
-    secsText = curItem.valueSecs.toString();
-    minsText = curItem.valueMins.toString();
+    secsText = curItem.tSecs.toString();
+    minsText = curItem.tMins?.toString();
   }
 
   @override
@@ -34,8 +35,8 @@ class _TimelineItemFState extends State<TimelineItemF> {
     return FittedBox(
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 1,
+          horizontal: 1,
+          vertical: 10,
         ),
         decoration: BoxDecoration(
           color: widget.backgroundColor,
@@ -49,22 +50,27 @@ class _TimelineItemFState extends State<TimelineItemF> {
                 "|", //this is the top alignment line
                 style: TextStyle(fontSize: 8, color: widget.curItem.color),
               ),
-              const SizedBox(height: 5),
-              RichText( //this is the minutes text  label for this element
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: minsText,
-                      style: TextStyle(
-                          fontSize: widget.curItem.fontSize,
-                          color: widget.curItem.color,
-                          fontWeight: secsText == "0"
-                              ? FontWeight.w800
-                              : FontWeight.w400),
-                    ),
-                  ],
-                ),
-              ),
+              ...((minsText == null)
+                  ? [] //nothing to the colum if minsText is null
+                  : [ //add minutes text if minsText not null
+                      const SizedBox(height: 5),
+                      RichText(
+                        //this is the minutes text  label for this element
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: minsText,
+                              style: TextStyle(
+                                  fontSize: widget.curItem.fontSize,
+                                  color: widget.curItem.color,
+                                  fontWeight: secsText == "0"
+                                      ? FontWeight.w800
+                                      : FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]),
               RichText( // this is the seconds text  label for this element
                 text: TextSpan(
                   children: [

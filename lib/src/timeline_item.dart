@@ -17,15 +17,16 @@ class TimelineItem extends StatefulWidget {
 }
 
 class _TimelineItemState extends State<TimelineItem> {
-  late String minsText, secsText;
+  late String? minsText;
+  late String secsText;
 
   @override
   void initState() {
     super.initState();
 
     final curItem= widget.curItem;
-    secsText = curItem.valueSecs.toString();
-    minsText = curItem.valueMins.toString();
+    secsText = curItem.tSecs.toString();
+    minsText = curItem.tMins?.toString();
   }
 
   @override
@@ -50,22 +51,27 @@ class _TimelineItemState extends State<TimelineItem> {
                 "|", //this is the top alignment line
                 style: TextStyle(fontSize: 8, color: widget.curItem.color),
               ),
-              const SizedBox(height: 5),
-              RichText( //this is the minutes text  label for this element
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: minsText,
-                      style: TextStyle(
-                          fontSize: widget.curItem.fontSize,
-                          color: widget.curItem.color,
-                          fontWeight: secsText == "0"
-                              ? FontWeight.w800
-                              : FontWeight.w400),
-                    ),
-                  ],
-                ),
-              ),
+              ...((minsText == null)
+                  ? [] //nothing to the colum if minsText is null
+                  : [ //add minutes text if minsText not null
+                      const SizedBox(height: 5),
+                      RichText(
+                        //this is the minutes text  label for this element
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: minsText,
+                              style: TextStyle(
+                                  fontSize: widget.curItem.fontSize,
+                                  color: widget.curItem.color,
+                                  fontWeight: secsText == "0"
+                                      ? FontWeight.w800
+                                      : FontWeight.w400),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]),
               RichText( // this is the seconds text  label for this element
                 text: TextSpan(
                   children: [

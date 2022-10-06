@@ -19,6 +19,7 @@ class ScrollableTimeline extends StatefulWidget {
   final double height;
   final Color backgroundColor;
   final bool showCursor;
+  final bool showMins;
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
@@ -35,6 +36,7 @@ class ScrollableTimeline extends StatefulWidget {
       required this.height,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
+      this.showMins = true,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
@@ -63,11 +65,20 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     isDragging=false; //if isDragging then ignore stream updates about current playing time
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
-    for (var i = 0; i <= divisions; i++) {
-      final secs = t % 60;
-      final mins = (t / 60).floor();
-      itemDatas.add(TimelineItemData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
-      t += widget.stepSecs;
+    if(widget.showMins) {
+      for (var i = 0; i <= divisions; i++) {
+        final secs = t % 60;
+        final mins = (t / 60).floor();
+        itemDatas.add(TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
+        t += widget.stepSecs;
+      }
+    } else
+    {
+      for (var i = 0; i <= divisions; i++) {
+        final secs = t % 60;
+        itemDatas.add(TimelineItemData(t:t, tMins: null, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
+        t += widget.stepSecs;
+      }
     }
     setScrollController();
     //important: set timeStreamSub after setting up scrollController
@@ -166,7 +177,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                     onSelectedItemChanged: (item) { //TODO: we actually don't need onSelectedItemChanged (we actually don't need ListWheelScrollView
                       curItem = item;
                       curTime = _scrollController.offset;
-                      widget.onItemSelected((itemDatas[item].value).toDouble());
+                      widget.onItemSelected((itemDatas[item].t).toDouble());
                     },
                     children: itemDatas.map((TimelineItemData curValue) {
                       return TimelineItem(curValue, widget.backgroundColor);

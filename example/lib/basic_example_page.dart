@@ -24,8 +24,10 @@ class BasicExamplePage extends StatefulWidget {
 class _BasicExamplePageState extends State<BasicExamplePage> {
   double? timeline1Value;
   double? timeline2Value;
+  double? timeline3Value;
   final ticker= _Ticker(0.0, 100.0);
   final ticker2= _Ticker(0.0, 100.0);
+  final ticker3= _Ticker(0.0, 100.0);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,8 +55,8 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
               Text(timeline1Value.toString()),
               Divider(),
               ScrollableTimelineF(
-                lengthSecs: 50,
-                stepSecs: 2,
+                lengthSecs: 100,
+                stepSecs: 10,
                 height: 120,
                 timeStream: ticker2.tick(ticks: 1000),
                 showCursor: true,
@@ -67,23 +69,31 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                   setState(() {
                     timeline2Value = t;
                   });
-                },
-
+                }
               ),
               Text(timeline2Value.toString()),
               Divider(),
-              ScrollableTimeline(
-                lengthSecs: 600,
-                stepSecs: 5,
-                height: 120,
-                showCursor: false,
-                backgroundColor: Colors.grey.shade900,
-                activeItemTextColor: Colors.white,
-                passiveItemsTextColor: Colors.amber,
-                onItemSelected: (value) {
-
-                },
+              ScrollableTimelineF(
+                  lengthSecs: 100,
+                  stepSecs: 2,
+                  height: 120,
+                  timeStream: ticker3.tick(ticks: 1000),
+                  showCursor: true,
+                  showMins: false,
+                  backgroundColor: Colors.lightBlue.shade50,
+                  activeItemTextColor: Colors.blue.shade800,
+                  passiveItemsTextColor: Colors.blue.shade300,
+                  onDragEnd: (double t) {
+                    print("*FLT* drag detected for ScrollableTimelineF to target time $t");
+                    ticker3.curt = t.roundToDouble();
+                    setState(() {
+                      timeline3Value = t;
+                    });
+                  }
               ),
+              Text(timeline3Value.toString()),
+              Divider(),
+
 
             ],
           ),

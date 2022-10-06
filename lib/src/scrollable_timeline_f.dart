@@ -26,6 +26,7 @@ class ScrollableTimelineF extends StatefulWidget {
   final int nPadItems;
   final Color backgroundColor;
   final bool showCursor;
+  final bool showMins;
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
@@ -42,6 +43,7 @@ class ScrollableTimelineF extends StatefulWidget {
       this.nPadItems=3,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
+      this.showMins = true,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
@@ -71,16 +73,25 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
     var t = 0;
     for(var i=0; i<widget.nPadItems; i++) {
-      itemDatas.add(TimelineItemData(value: 0, valueMins: 0, valueSecs: 0, color: widget.backgroundColor, fontSize: 14));
+      itemDatas.add(TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14));
     }
-    for (var i = 0; i <= divisions; i++) {
-      final secs = t % 60;
-      final mins = (t / 60).floor();
-      itemDatas.add(TimelineItemData(value:t, valueMins: mins, valueSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
-      t += widget.stepSecs;
+    if(widget.showMins) {
+      for (var i = 0; i <= divisions; i++) {
+        final secs = t % 60;
+        final mins = (t / 60).floor();
+        itemDatas.add(TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
+        t += widget.stepSecs;
+      }
+    } else
+    {
+      for (var i = 0; i <= divisions; i++) {
+        final secs = t % 60;
+        itemDatas.add(TimelineItemData(t:t, tMins: null, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
+        t += widget.stepSecs;
+      }
     }
     for(var i=0; i<widget.nPadItems; i++) {
-      itemDatas.add(TimelineItemData(value: 0, valueMins: 0, valueSecs: 0, color: widget.backgroundColor, fontSize: 14));
+      itemDatas.add(TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14));
     }
     setScrollController();
     //important: set timeStreamSub after setting up scrollController

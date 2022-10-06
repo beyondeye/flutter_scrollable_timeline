@@ -1,10 +1,11 @@
 import 'dart:ui';
 
 class TimelineItemData {
-  int value;
-  int valueMins;
-  int valueSecs;
+  int t;
+  /// if null don't show it
+  int? tMins;
+  int tSecs;
   Color color;
   double fontSize;
-  TimelineItemData({required this.value, required this.valueMins, required this.valueSecs, required this.color, required this.fontSize});
+  TimelineItemData({required this.t, required this.tMins, required this.tSecs, required this.color, required this.fontSize});
 }
