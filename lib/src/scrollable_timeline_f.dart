@@ -146,10 +146,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
           child: Stack(
             // use a stack here in order to show the (optional) cursor on top of the scrollview
             children: <Widget>[
-              RotatedBox(
-                //needed to make ListWheelScrollView horizontal
-                quarterTurns: 0,
-                child: ListView(
+               ListView(
                   scrollDirection: Axis.horizontal,
                     controller: _scrollController,
                     // the size in pixel of each item in the scale
@@ -157,7 +154,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
                     children: itemDatas.map((TimelineItemData curValue) {
                       return TimelineItemF(curValue, widget.backgroundColor);
                     }).toList()),
-              ),
               Visibility(
                 // visibility modifier to make the cursor optional
                 visible: widget.showCursor,
