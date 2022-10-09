@@ -35,7 +35,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
   final int nPadItems;
-
+  final int divisions;
   ScrollableTimelineF(
       {required this.lengthSecs,
       required this.stepSecs,
@@ -54,7 +54,8 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       this.itemExtent = 60})
       : assert(stepSecs > 0),
         assert(lengthSecs > stepSecs),
-        pixPerSecs=itemExtent/stepSecs;
+        pixPerSecs=itemExtent/stepSecs,
+        divisions=(lengthSecs / stepSecs).ceil() + 1;
 
   @override
   _ScrollableTimelineFState createState() => _ScrollableTimelineFState();
@@ -72,29 +73,6 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   void initState() {
     super.initState();
     isDragging=false; //if isDragging then ignore stream updates about current playing time
-    final divisions = (widget.lengthSecs / widget.stepSecs).ceil() + 1;
-    var t = 0;
-    for(var i=0; i<widget.nPadItems; i++) {
-      itemDatas.add(TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14));
-    }
-    if(widget.showMinutes) {
-      for (var i = 0; i <= divisions; i++) {
-        final secs = t % 60;
-        final mins = (t / 60).floor();
-        itemDatas.add(TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
-        t += widget.stepSecs;
-      }
-    } else
-    { //showMinutes==false
-      for (var i = 0; i <= divisions; i++) {
-        final secs = t % 60;
-        itemDatas.add(TimelineItemData(t:t, tMins: null, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0));
-        t += widget.stepSecs;
-      }
-    }
-    for(var i=0; i<widget.nPadItems; i++) {
-      itemDatas.add(TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14));
-    }
     setScrollController();
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
@@ -216,14 +194,32 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
           child: Stack(
             // use a stack here in order to show the (optional) cursor on top of the scrollview
             children: <Widget>[
-               ListView(
+               ListView.builder(
                   scrollDirection: Axis.horizontal,
                     controller: _scrollController,
                     // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
-                    children: itemDatas.map((TimelineItemData curValue) {
-                      return TimelineItemF(curValue, widget.backgroundColor,widget.insideVertPadding);
-                    }).toList()),
+                    itemCount: widget.divisions+2*widget.nPadItems,
+                    itemBuilder: (buildContext,index) {
+                      TimelineItemData itemData;
+                        if(index<widget.nPadItems || index>=widget.nPadItems+widget.divisions) {
+                           itemData=TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14);
+                        } else {
+                          int i=index-widget.nPadItems;
+                          int t=i*widget.stepSecs;
+                          final secs = t % 60;
+                          int? mins=null;
+                          if(widget.showMinutes) {
+                            mins = (t / 60).floor();
+                          }
+                          itemData=TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0);
+                        }
+                        return TimelineItemF(itemData, widget.backgroundColor,widget.insideVertPadding);
+                    },
+//                    children: itemDatas.map((TimelineItemData curValue) {
+//                      return TimelineItemF(curValue, widget.backgroundColor,widget.insideVertPadding);
+//                    }).toList()
+               ).build(context),
               indicatorWidget(widget)
             ],
           ));
