@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'timeline_scrollbehavior.dart';
 import 'iscrollable_timeline.dart';
 import 'timeline_item_data.dart';
 import 'timeline_item_f.dart';
@@ -123,8 +124,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
 //    _scrollController.jumpTo(value);
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget gestureConfiguration(BuildContext context, {required Widget child}) {
     return GestureDetector(
 
       // we track  down event, not start, because start event is not sent immediately
@@ -144,49 +144,62 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
           isDragging = false;
         },
 
-      child: NotificationListener<ScrollNotification>(
-          onNotification: (scrollNotification) {
-            // I need to add some empty items at the beginning and compensate for them
-            //if this scroll is not user generated ignore the notification
-            if(!isDragging) return false; //allow scroll notification to bubble up
-            //final tick = widget.pixPerSecs;
-            if (scrollNotification is ScrollStartNotification) {
-              //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
-              this.widget.onDragStart(_scrollController.offset / widget.pixPerSecs);
+        child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollNotification) {
+              // I need to add some empty items at the beginning and compensate for them
+              //if this scroll is not user generated ignore the notification
+              if(!isDragging) return false; //allow scroll notification to bubble up
+              //final tick = widget.pixPerSecs;
+              if (scrollNotification is ScrollStartNotification) {
+                //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
+                this.widget.onDragStart(_scrollController.offset / widget.pixPerSecs);
 //          } else if (scrollNotification is ScrollUpdateNotification) {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
-            } else if (scrollNotification is ScrollEndNotification) {
+              } else if (scrollNotification is ScrollEndNotification) {
 //              print("*SCR* scroll offs: ${_scrollController.offset}");
 //              print("*SCR* shown items: ${shown_items}");
-              //print("*SCR* Scroll End ${_scrollController.offset / tick}");
-              double t=scrollOffsetToTime(_scrollController.offset);
-              var isClipped=false;
-              if(t<0) {
-                t = 0;
-                isClipped = true;
+                //print("*SCR* Scroll End ${_scrollController.offset / tick}");
+                double t=scrollOffsetToTime(_scrollController.offset);
+                var isClipped=false;
+                if(t<0) {
+                  t = 0;
+                  isClipped = true;
+                }
+                if(t>widget.lengthSecs) {
+                  t=widget.lengthSecs.toDouble();
+                  isClipped=true;
+                }
+                //TODO the following code forcing back _scrollController to
+                // a valid position is not always necessary because _scrollController
+                // itself is driven by the current time and if the clippedT is feed
+                // back in widget.timeStream, then the clipping will happen automatically
+                if(isClipped) {
+                  final clippedT=timeToScrollOffset(t);
+                  SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+                    //the following line will cause stack overflow exception if run directly in onNotification() callback
+                    _scrollController.jumpTo(clippedT);
+                  });
+                }
+                this.widget.onDragEnd(t);
+                isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
               }
-              if(t>widget.lengthSecs) {
-                t=widget.lengthSecs.toDouble();
-                isClipped=true;
-              }
-              //TODO the following code forcing back _scrollController to
-              // a valid position is not always necessary because _scrollController
-              // itself is driven by the current time and if the clippedT is feed
-              // back in widget.timeStream, then the clipping will happen automatically
-              if(isClipped) {
-                final clippedT=timeToScrollOffset(t);
-                SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
-                  //the following line will cause stack overflow exception if run directly in onNotification() callback
-                  _scrollController.jumpTo(clippedT);
-                });
-              }
-              this.widget.onDragEnd(t);
-              isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
-            }
-            return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
-          },
-          child: timeLineBody()
-      )
+              return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
+            },
+            child: child
+        )
+    );
+  }
+  //see https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag#setting-a-custom-scrollbehavior-for-a-specific-widget
+  Widget scrollBehaviorConfig(BuildContext context, {required Widget child}) {
+    return ScrollConfiguration(behavior: TimelineScrollBehavior(), child: child);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return gestureConfiguration(context,
+        child: ScrollConfiguration(
+            behavior: TimelineScrollBehavior(),
+            child: timeLineBody()
+        )
     );
   }
 

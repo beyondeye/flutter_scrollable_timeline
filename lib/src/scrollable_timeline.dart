@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'timeline_scrollbehavior.dart';
 import 'iscrollable_timeline.dart';
 import 'timeline_item_data.dart';
 import 'timeline_item.dart';
@@ -101,9 +102,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     _scrollController = FixedExtentScrollController(initialItem: 0);
 //    _scrollController.jumpTo(value);
   }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget gestureConfiguration(BuildContext context, {required Widget child}) {
     return GestureDetector(
 
       // we track  down event, not start, because start event is not sent immediately
@@ -123,28 +122,43 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
           isDragging = false;
         },
 
-      child: NotificationListener<ScrollNotification>(
-          onNotification: (scrollNotification) {
-            //if this scroll is not user generated ignore the notification
-            if(!isDragging) return false; //allow scroll notification to bubble up
-            final tick = widget.pixPerSecs;
-            if (scrollNotification is ScrollStartNotification) {
-              //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
-              this.widget.onDragStart(_scrollController.offset / tick);
+        child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollNotification) {
+              //if this scroll is not user generated ignore the notification
+              if(!isDragging) return false; //allow scroll notification to bubble up
+              final tick = widget.pixPerSecs;
+              if (scrollNotification is ScrollStartNotification) {
+                //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
+                this.widget.onDragStart(_scrollController.offset / tick);
 //          } else if (scrollNotification is ScrollUpdateNotification) {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
-            } else if (scrollNotification is ScrollEndNotification) {
-              //print("*SCR* Scroll End ${_scrollController.offset / tick}");
-              this.widget.onDragEnd(_scrollController.offset / tick);
-              isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
-            }
-            return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
-          },
-          child: timeLineBody()
-      )
+              } else if (scrollNotification is ScrollEndNotification) {
+                //print("*SCR* Scroll End ${_scrollController.offset / tick}");
+                this.widget.onDragEnd(_scrollController.offset / tick);
+                isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
+              }
+              return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
+            },
+            child: child
+        )
     );
+
   }
 
+  //see https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag#setting-a-custom-scrollbehavior-for-a-specific-widget
+  Widget scrollBehaviorConfig(BuildContext context, {required Widget child}) {
+    return ScrollConfiguration(behavior: TimelineScrollBehavior(), child: child);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return gestureConfiguration(context,
+        child: ScrollConfiguration(
+            behavior: TimelineScrollBehavior(),
+            child: timeLineBody()
+        )
+    );
+  }
   //------------------------------------------------------------
   // the actual timeline ui
   Container timeLineBody() {
