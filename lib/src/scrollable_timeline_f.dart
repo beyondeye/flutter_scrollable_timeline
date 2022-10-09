@@ -101,8 +101,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     //the following is not needed: we listern from timeStream instead
 //    _scrollController.jumpTo(value);
   }
-
-  Widget gestureConfiguration(BuildContext context, {required Widget child}) {
+  //------------------------------------------------------------
+  Widget _gestureConfiguration(BuildContext context, {required Widget child}) {
     return GestureDetector(
 
       // we track  down event, not start, because start event is not sent immediately
@@ -167,23 +167,38 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
         )
     );
   }
-  //see https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag#setting-a-custom-scrollbehavior-for-a-specific-widget
-  Widget scrollBehaviorConfig(BuildContext context, {required Widget child}) {
-    return ScrollConfiguration(behavior: TimelineScrollBehavior(), child: child);
-  }
+  //------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
-    return gestureConfiguration(context,
+    return _gestureConfiguration(context,
+        // see https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag#setting-a-custom-scrollbehavior-for-a-specific-widget
         child: ScrollConfiguration(
             behavior: TimelineScrollBehavior(),
-            child: timeLineBody()
+            child: _timeLineBody()
         )
     );
   }
 
   //------------------------------------------------------------
+  TimelineItemF _itemBuilder(BuildContext buildContext, int index) {
+    TimelineItemData itemData;
+    if(index<widget.nPadItems || index>=widget.nPadItems+widget.divisions) {
+      itemData=TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14);
+    } else {
+      int i=index-widget.nPadItems;
+      int t=i*widget.stepSecs;
+      final secs = t % 60;
+      int? mins=null;
+      if(widget.showMinutes) {
+        mins = (t / 60).floor();
+      }
+      itemData=TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0);
+    }
+    return TimelineItemF(itemData, widget.backgroundColor,widget.insideVertPadding);
+  }
+  //------------------------------------------------------------
   // the actual timeline ui
-  Container timeLineBody() {
+  Container _timeLineBody() {
     return Container(
          //important: if padding is changed, then need to review scrollOffsetToTime() and
           padding: const EdgeInsets.all(0),
@@ -200,25 +215,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
                     // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
                     itemCount: widget.divisions+2*widget.nPadItems,
-                    itemBuilder: (buildContext,index) {
-                      TimelineItemData itemData;
-                        if(index<widget.nPadItems || index>=widget.nPadItems+widget.divisions) {
-                           itemData=TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14);
-                        } else {
-                          int i=index-widget.nPadItems;
-                          int t=i*widget.stepSecs;
-                          final secs = t % 60;
-                          int? mins=null;
-                          if(widget.showMinutes) {
-                            mins = (t / 60).floor();
-                          }
-                          itemData=TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0);
-                        }
-                        return TimelineItemF(itemData, widget.backgroundColor,widget.insideVertPadding);
-                    },
-//                    children: itemDatas.map((TimelineItemData curValue) {
-//                      return TimelineItemF(curValue, widget.backgroundColor,widget.insideVertPadding);
-//                    }).toList()
+                    itemBuilder: _itemBuilder
                ).build(context),
               indicatorWidget(widget)
             ],
