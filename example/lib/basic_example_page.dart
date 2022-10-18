@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
 
@@ -19,6 +21,49 @@ class _Ticker {
     }).take(ticks);
   }
 }
+class _BroadcastTicker {
+  final double tmin;
+  final double tmax;
+  final double tstep;
+  final int? ticks;
+  double curt;
+  late Stream<double> stream;
+  // see https://dart.dev/articles/libraries/creating-streams
+  _BroadcastTicker(this.tmin, this.tmax, {this.tstep = 1.0, this.ticks=1000}):curt=tmin {
+    final interval =Duration(microseconds: (tstep*1000000).toInt());
+    late StreamController<double> controller;
+    Timer? timer;
+    int counter = 0;
+
+    void tick(_) {
+      curt += tstep;
+      curt = curt.clamp(tmin, tmax);
+      controller.add(curt); // Ask stream to send counter values as event.
+      if (counter == ticks) {
+        timer?.cancel();
+        controller.close(); // Ask stream to shut down and tell listeners.
+      }
+    }
+
+    void startTimer() {
+      timer = Timer.periodic(interval, tick);
+    }
+
+    void stopTimer() {
+      timer?.cancel();
+      timer = null;
+    }
+
+    controller = StreamController<double>.broadcast(
+        onListen: startTimer,
+//        onPause: stopTimer,
+//        onResume: startTimer,
+        onCancel: stopTimer);
+
+    stream= controller.stream;
+  }
+
+}
 
 class BasicExamplePage extends StatefulWidget {
   @override
@@ -31,7 +76,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
   double? timeline3Value;
   final ticker = _Ticker(0.0, 100.0);
   final ticker2 = _Ticker(0.0, 100.0);
-  final ticker3 = _Ticker(0.0, 100.0);
+  final broadcastticker = _BroadcastTicker(0.0, 100.0);
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +113,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               stepSecs: 10,
                               height: 120,
                               insideVertPadding: 10,
-                              timeStream: ticker2.tick(ticks: 1000),
+                              timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
                               showCursor: true,
                               backgroundColor: Colors.lightBlue.shade50,
                               activeItemTextColor: Colors.blue.shade800,
@@ -76,7 +121,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               onDragEnd: (double t) {
                                 print(
                                     "*FLT* drag detected for ScrollableTimelineF to target time $t");
-                                ticker2.curt = t.roundToDouble();
+                                broadcastticker.curt = t.roundToDouble();
                                 setState(() {
                                   timeline2Value = t;
                                 });
@@ -88,7 +133,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               stepSecs: 2,
                               height: 120,
                               insideVertPadding: 10,
-                              timeStream: ticker3.tick(ticks: 1000),
+                              timeStream: broadcastticker.stream, ////ticker2.tick(ticks: 1000
                               showCursor: true,
                               showMinutes: false,
                               backgroundColor: Colors.lightBlue.shade50,
@@ -97,7 +142,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               onDragEnd: (double t) {
                                 print(
                                     "*FLT* drag detected for ScrollableTimelineF to target time $t");
-                                ticker3.curt = t.roundToDouble();
+                                broadcastticker.curt = t.roundToDouble();
                                 setState(() {
                                   timeline3Value = t;
                                 });
