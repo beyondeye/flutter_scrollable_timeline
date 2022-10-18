@@ -6,7 +6,7 @@ repository: https://github.com/beyondeye/flutter_scrollable_timeline
 documentation: https://github.com/beyondeye/flutter_scrollable_timeline/blob/master/README.md
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
   flutter:

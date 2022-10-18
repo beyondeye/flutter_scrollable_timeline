@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'dragging_state_provider.dart';
 import 'timeline_scrollbehavior.dart';
 import 'iscrollable_timeline.dart';
 import 'timeline_item_data.dart';
@@ -44,14 +45,15 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       this.onDragEnd =_stub,
       required this.height,
       this.insideVertPadding=10,
-      this.nPadItems=3,
+      this.nPadItems=8,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.showMinutes = true,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
-      this.itemExtent = 60})
+      this.itemExtent = 60
+      })
       : assert(stepSecs > 0),
         assert(lengthSecs > stepSecs),
         pixPerSecs=itemExtent/stepSecs,
@@ -65,19 +67,25 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   // Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late ScrollController _scrollController;
-  List<TimelineItemData> itemDatas = [];
-  bool isDragging=false;
+  late IScrollableTimelineDraggingState draggingState;
   StreamSubscription<double>? timeStreamSub;
 
   @override
   void initState() {
     super.initState();
-    isDragging=false; //if isDragging then ignore stream updates about current playing time
+    print("*FLT* initState called");
+    // if isDragging then ignore stream updates about current playing time
+    //by default dragging state is local to this widget (STD
+    draggingState = NonSharedDraggingState();
     setScrollController();
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
-      if(isDragging) return; //ignore time update if dragging
-      final tClamped=t.clamp(0.0, widget.lengthSecs.toDouble());
+      if (draggingState.isDragging) {
+        print("dragging");
+        return; //ignore time update if dragging
+      }
+      print("not dragging");
+      final tClamped = t.clamp(0.0, widget.lengthSecs.toDouble());
       _scrollController.jumpTo(timeToScrollOffset(tClamped));
     });
   }
@@ -110,23 +118,23 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
       // are cancelled when scroll is detected in the enclosed widget
         onLongPressDown: (details) {
           //print("*FLT* long press down");
-          isDragging = true;
+          draggingState.isDragging = true;
         },
         onLongPressCancel: () {
-          //print ("*flt* long press cancel");
-          isDragging = false;
+          print ("*flt* long press cancel");
+          draggingState.isDragging = false;
         },
 
         onLongPressEnd: (details) {
-          //print ("*flt* long press end");
-          isDragging = false;
+          print ("*flt* long press end");
+          draggingState.isDragging = false;
         },
 
         child: NotificationListener<ScrollNotification>(
             onNotification: (scrollNotification) {
               // I need to add some empty items at the beginning and compensate for them
               //if this scroll is not user generated ignore the notification
-              if(!isDragging) return false; //allow scroll notification to bubble up
+              if(!draggingState.isDragging) return false; //allow scroll notification to bubble up
               //final tick = widget.pixPerSecs;
               if (scrollNotification is ScrollStartNotification) {
                 //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
@@ -159,7 +167,8 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
                   });
                 }
                 this.widget.onDragEnd(t);
-                isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
+                print ("*flt* drag end");
+                draggingState.isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
               }
               return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
             },
@@ -170,6 +179,11 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   //------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    ScrollableTimelineSharedDragging? sharedDragging=ScrollableTimelineSharedDragging.of(context);
+    if(sharedDragging!=null) {
+      draggingState=sharedDragging;
+    }
+
     return _gestureConfiguration(context,
         // see https://docs.flutter.dev/release/breaking-changes/default-scroll-behavior-drag#setting-a-custom-scrollbehavior-for-a-specific-widget
         child: ScrollConfiguration(
@@ -188,7 +202,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
       int i=index-widget.nPadItems;
       int t=i*widget.stepSecs;
       final secs = t % 60;
-      int? mins=null;
+      int? mins;
       if(widget.showMinutes) {
         mins = (t / 60).floor();
       }
