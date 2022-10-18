@@ -43,6 +43,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
+                          /* TODO ScrollableTimeline removed from sample because dragging stopped working
                           ScrollableTimeline(
                             lengthSecs: 30,
                             stepSecs: 5,
@@ -61,6 +62,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                           ),
                           Text(timeline1Value.toString()),
                           Divider(),
+                           */
                           ScrollableTimelineF(
                               lengthSecs: 100,
                               stepSecs: 10,
