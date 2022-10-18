@@ -81,10 +81,10 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
       if (draggingState.isDragging) {
-        print("dragging");
+       // print("dragging");
         return; //ignore time update if dragging
       }
-      print("not dragging");
+      // print("not dragging");
       final tClamped = t.clamp(0.0, widget.lengthSecs.toDouble());
       _scrollController.jumpTo(timeToScrollOffset(tClamped));
     });
