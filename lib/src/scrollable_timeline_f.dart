@@ -45,7 +45,10 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       this.onDragEnd =_stub,
       required this.height,
       this.insideVertPadding=10,
-      this.nPadItems=8,
+      //TODO currently this default value is set to a very high value, that is appropriate for even full window full width timeline on web platform
+      //     but is actually an overkill. I should define this using mediaquery https://api.flutter.dev/flutter/widgets/MediaQuery-class.html
+      //     But since I am using ListView.builder with itemBuilder, it is probably OK to leave the code as it is
+      this.nPadItems=50,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.showMinutes = true,
@@ -73,7 +76,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   @override
   void initState() {
     super.initState();
-    print("*FLT* initState called");
+    //print("*FLT* initState called");
     // if isDragging then ignore stream updates about current playing time
     //by default dragging state is local to this widget (STD
     draggingState = NonSharedDraggingState();
@@ -121,12 +124,12 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
           draggingState.isDragging = true;
         },
         onLongPressCancel: () {
-          print ("*flt* long press cancel");
+          //print ("*flt* long press cancel");
           draggingState.isDragging = false;
         },
 
         onLongPressEnd: (details) {
-          print ("*flt* long press end");
+          //print ("*flt* long press end");
           draggingState.isDragging = false;
         },
 
@@ -167,7 +170,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
                   });
                 }
                 this.widget.onDragEnd(t);
-                print ("*flt* drag end");
+                //print ("*flt* drag end");
                 draggingState.isDragging = false; //this is not redundant:  onLongPressEnd is not always detected
               }
               return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
