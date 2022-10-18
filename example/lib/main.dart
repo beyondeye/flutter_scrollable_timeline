@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'basic_example_page.dart';
+import 'expandable_example_page.dart';
 
 void main() => runApp(MyApp());
 
 class RouteNames {
   static const String root="/";
   static const String simple="/simple";
+  static const String expandable="/expandable";
   static const String youtube="/youtube";
 }
 
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
       routes: {
         RouteNames.root: (context) => MainScreen(),
         RouteNames.simple: (context) => BasicExamplePage(),
+        RouteNames.expandable: (context) => ExpandableExamplePage(),
         RouteNames.youtube: (context) => BasicExamplePage(),
       },
       debugShowCheckedModeBanner: true,
@@ -41,12 +44,21 @@ class MainScreen extends StatelessWidget {
         body: Center(
       child: Column(
         children: [
+          Divider(thickness: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {
                 Navigator.pushNamed(context, RouteNames.simple);
               },
               child: Text("simple example")),
+          Divider(thickness: 10),
+          ElevatedButton(
+              style: btnStyle,
+              onPressed: () {
+                Navigator.pushNamed(context, RouteNames.expandable);
+              },
+              child: Text("expandable example")),
+          Divider(thickness: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {

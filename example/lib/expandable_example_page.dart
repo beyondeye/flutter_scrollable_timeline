@@ -5,13 +5,12 @@ import 'package:scrollable_timeline/scrollable_timeline.dart';
 import 'utils/broadcast_ticker.dart';
 import 'utils/ticker.dart';
 
-
-class BasicExamplePage extends StatefulWidget {
+class ExpandableExamplePage extends StatefulWidget {
   @override
-  _BasicExamplePageState createState() => _BasicExamplePageState();
+  _ExpandableExamplePageState createState() => _ExpandableExamplePageState();
 }
 
-class _BasicExamplePageState extends State<BasicExamplePage> {
+class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
   double? timeline1Value;
   double? timeline2Value;
   double? timeline3Value;
