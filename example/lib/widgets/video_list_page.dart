@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-import 'package:youtube_player_iframe_example/full_screen_player_page.dart';
+//import 'package:youtube_player_iframe_example/full_screen_player_page.dart';
 
 const List<String> _videoIds = [
   'dHuYBB05bYU',
@@ -61,10 +61,7 @@ class _VideoListPageState extends State<VideoListPage> {
                     final currentTime = await Navigator.push<double>(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FullScreenPlayerPage(
-                          videoId: videoData.videoId,
-                          startSeconds: startSeconds,
-                        ),
+                        builder: (context) => Text("") /* FullScreenPlayerPage(videoId: videoData.videoId, startSeconds: startSeconds), */
                       ),
                     );
 

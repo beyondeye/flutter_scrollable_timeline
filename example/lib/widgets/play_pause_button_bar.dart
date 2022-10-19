@@ -7,6 +7,8 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 ///
 class PlayPauseButtonBar extends StatelessWidget {
+  //*DARIO* a value that when changes will trigger rebuild widget trees under ValueListenableBuilder
+  // with the specified value
   final ValueNotifier<bool> _isMuted = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
@@ -15,12 +17,12 @@ class PlayPauseButtonBar extends StatelessWidget {
       children: [
         IconButton(
           icon: const Icon(Icons.skip_previous),
-          onPressed: context.ytController.previousVideo,
+          onPressed: context.ytController.previousVideo, //*DARIO* go to next video in play list
         ),
         YoutubeValueBuilder(
           builder: (context, value) {
             return IconButton(
-              icon: Icon(
+              icon: Icon( //*DARIO* pause/play button
                 value.playerState == PlayerState.playing
                     ? Icons.pause
                     : Icons.play_arrow,

@@ -11,7 +11,7 @@ class PlayerStateSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return YoutubeValueBuilder(
       builder: (context, value) {
-        return AnimatedContainer(
+        return AnimatedContainer( // *DARIO* animated version of Container widget
           duration: const Duration(milliseconds: 800),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),

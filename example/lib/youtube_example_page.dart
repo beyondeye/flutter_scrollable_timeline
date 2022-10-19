@@ -11,7 +11,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-import 'package:youtube_player_iframe_example/video_list_page.dart';
+//import 'package:youtube_player_iframe_example/video_list_page.dart';
 
 import 'widgets/meta_data_section.dart';
 import 'widgets/play_pause_button_bar.dart';
@@ -265,7 +265,7 @@ class VideoPlaylistIconButton extends StatelessWidget {
         await Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const VideoListPage(),
+            builder: (context) => Text("") /* const VideoListPage(), */
           ),
         );
         controller.playVideo();
