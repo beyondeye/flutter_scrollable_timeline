@@ -6,12 +6,16 @@ class TimelineItemF extends StatefulWidget {
   final TimelineItemData curItem;
   // potentially independent bg color for each item
   final Color backgroundColor;
-  final double insideVertPadding;
+  final double rulerOutsidePadding;
+  final double rulerSize;
+  final double rulerInsidePadding;
 
   const TimelineItemF(
     this.curItem,
     this.backgroundColor,
-    this.insideVertPadding,
+      this.rulerOutsidePadding,
+      this.rulerSize,
+      this.rulerInsidePadding,
   {
     Key? key,
   }) : super(key: key);
@@ -39,13 +43,13 @@ class _TimelineItemFState extends State<TimelineItemF> {
       child: Container(
         padding: EdgeInsets.symmetric(
           horizontal: 1,
-          vertical: widget.insideVertPadding,
+          vertical: widget.rulerOutsidePadding,
         ),
         decoration: BoxDecoration(
           color: widget.backgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
-          child: itemMinSecsLabels(secsText,minsText, widget.curItem)
+          child: itemMinSecsLabels(secsText,minsText, widget.curItem,widget.rulerSize,widget.rulerInsidePadding)
       ),
     );
   }

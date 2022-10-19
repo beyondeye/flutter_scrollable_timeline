@@ -5,7 +5,9 @@ abstract class IScrollableTimeLine {
   abstract final int lengthSecs;
   abstract final int stepSecs;
   abstract final double height;
-  abstract final double insideVertPadding;
+  abstract final double rulerOutsidePadding;
+  abstract final double rulerSize;
+  abstract final double rulerInsidePadding;
   abstract final Color backgroundColor;
   abstract final bool showCursor;
   abstract final bool showMinutes;
@@ -41,7 +43,9 @@ Widget indicatorWidget(IScrollableTimeLine widget) =>
       ),
     );
 
-Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData curItem) {
+//IMPORTANT: rulerSize smaller than 8 will cause graphic glitches. don't use it
+Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData curItem,
+    double rulerSize, double rulerInsidePadding) {
   final String secsText = secsText_?? curItem.tSecs.toString();
   final String? minsText = minsText_ ?? curItem.tMins?.toString();
   return Column(
@@ -50,12 +54,12 @@ Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData cu
     children: <Widget>[
       Text(
         "|", //this is the top alignment line
-        style: TextStyle(fontSize: 8, color: curItem.color),
+        style: TextStyle(fontSize: rulerSize, color: curItem.color),
       ),
+      SizedBox(height: rulerInsidePadding),
       ...((minsText == null)
           ? [] //nothing to the colum if minsText is null
           : [ //add minutes text if minsText not null
-        const SizedBox(height: 5),
         RichText(
           //this is the minutes text  label for this element
           text: TextSpan(
@@ -85,10 +89,10 @@ Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData cu
           ],
         ),
       ),
-      const SizedBox(height: 5),
+      SizedBox(height: rulerInsidePadding),
       Text(
         "|", // this is the bottom alignment line
-        style: TextStyle(fontSize: 8, color: curItem.color),
+        style: TextStyle(fontSize: rulerSize, color: curItem.color),
       ),
     ],
   );

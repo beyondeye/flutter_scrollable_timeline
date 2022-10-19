@@ -5,12 +5,18 @@ class TimelineItem extends StatefulWidget {
   final TimelineItemData curItem;
   // potentially independent bg color for each item
   final Color backgroundColor;
-  final double insideVertPadding;
+  final double rulerOutsidePadding;
+  //IMPORTANT: rulerSize smaller than 8 will cause graphic glitches: don't use it
+  final double rulerSize;
+  final double rulerInsidePadding;
+
 
   const TimelineItem(
     this.curItem,
     this.backgroundColor,
-    this.insideVertPadding,
+    this.rulerOutsidePadding,
+    this.rulerSize,
+    this.rulerInsidePadding,
   {
     Key? key,
   }) : super(key: key);
@@ -37,7 +43,7 @@ class _TimelineItemState extends State<TimelineItem> {
     return FittedBox(
       child: Container(
         padding:  EdgeInsets.symmetric(
-          horizontal: widget.insideVertPadding, //this actual vertical padding, after rotation
+          horizontal: widget.rulerOutsidePadding, //this actual vertical padding, after rotation
           vertical: 1, //this actual horizontal padding after rotation
         ),
         decoration: BoxDecoration(
@@ -46,7 +52,7 @@ class _TimelineItemState extends State<TimelineItem> {
         ),
         child: RotatedBox( // this is needed because we rotate ListWheelScrollView to make it horizontal
           quarterTurns: 1,
-          child: itemMinSecsLabels(secsText,minsText, widget.curItem)
+          child: itemMinSecsLabels(secsText,minsText, widget.curItem,widget.rulerSize,widget.rulerInsidePadding)
       ),
       ),
     );

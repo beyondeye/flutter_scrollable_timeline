@@ -26,7 +26,9 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
-  final double insideVertPadding;
+  final double rulerOutsidePadding;
+  final double rulerSize;
+  final double rulerInsidePadding;
   final Color backgroundColor;
   final bool showCursor;
   final bool showMinutes;
@@ -44,7 +46,9 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
-      this.insideVertPadding=10,
+      this.rulerOutsidePadding=10,
+        this.rulerSize=8,
+        this.rulerInsidePadding=5,
       //TODO currently this default value is set to a very high value, that is appropriate for even full window full width timeline on web platform
       //     but is actually an overkill. I should define this using mediaquery https://api.flutter.dev/flutter/widgets/MediaQuery-class.html
       //     But since I am using ListView.builder with itemBuilder, it is probably OK to leave the code as it is
@@ -59,7 +63,8 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       })
       : assert(stepSecs > 0),
         assert(lengthSecs > stepSecs),
-        pixPerSecs=itemExtent/stepSecs,
+        assert(rulerSize>=8,"rulerSize smaller than 8 will cause graphic glitches"),
+      pixPerSecs=itemExtent/stepSecs,
         divisions=(lengthSecs / stepSecs).ceil() + 1;
 
   @override
@@ -211,7 +216,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
       }
       itemData=TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0);
     }
-    return TimelineItemF(itemData, widget.backgroundColor,widget.insideVertPadding);
+    return TimelineItemF(itemData, widget.backgroundColor,widget.rulerOutsidePadding,widget.rulerSize,widget.rulerInsidePadding);
   }
   //------------------------------------------------------------
   // the actual timeline ui

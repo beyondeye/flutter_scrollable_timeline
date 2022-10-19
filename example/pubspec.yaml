@@ -12,6 +12,7 @@ dependencies:
   scrollable_timeline:
     path: ../
   youtube_player_iframe: ^3.1.0
+  expandable:  ^5.0.1
 
 dev_dependencies:
   flutter_test:

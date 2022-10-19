@@ -21,7 +21,9 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   final Function(double) onDragStart;
   final Function(double) onDragEnd;
   final double height;
-  final double insideVertPadding;
+  final double rulerOutsidePadding;
+  final double rulerSize;
+  final double rulerInsidePadding;
   final Color backgroundColor;
   final bool showCursor;
   final bool showMinutes;
@@ -40,7 +42,9 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
       this.onDragStart = _stub,
       this.onDragEnd =_stub,
       required this.height,
-      this.insideVertPadding=10,
+      this.rulerOutsidePadding=10,
+      this.rulerSize=8,
+      this.rulerInsidePadding=5,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.showMinutes = true,
@@ -50,7 +54,8 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
       this.itemExtent = 60})
       : assert(stepSecs > 0),
         assert(lengthSecs > stepSecs),
-        pixPerSecs=itemExtent/stepSecs;
+        assert(rulerSize>=8,"rulerSize smaller than 8 will cause graphic glitches"),
+      pixPerSecs=itemExtent/stepSecs;
 
   @override
   _ScrollableTimelineState createState() => _ScrollableTimelineState();
@@ -209,7 +214,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                       widget.onItemSelected((itemDatas[item].t).toDouble());
                     },
                     children: itemDatas.map((TimelineItemData curValue) {
-                      return TimelineItem(curValue, widget.backgroundColor,widget.insideVertPadding);
+                      return TimelineItem(curValue, widget.backgroundColor,widget.rulerOutsidePadding,widget.rulerSize,widget.rulerInsidePadding);
                     }).toList()),
               ),
               indicatorWidget(widget)

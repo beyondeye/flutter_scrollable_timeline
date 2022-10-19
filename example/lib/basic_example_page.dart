@@ -53,7 +53,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               lengthSecs: 100,
                               stepSecs: 10,
                               height: 120,
-                              insideVertPadding: 10,
+                              rulerOutsidePadding: 10,
                               timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
                               showCursor: true,
                               backgroundColor: Colors.lightBlue.shade50,
@@ -73,7 +73,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               lengthSecs: 100,
                               stepSecs: 2,
                               height: 120,
-                              insideVertPadding: 10,
+                              rulerOutsidePadding: 10,
                               timeStream: broadcastticker.stream, ////ticker2.tick(ticks: 1000
                               showCursor: true,
                               showMinutes: false,
