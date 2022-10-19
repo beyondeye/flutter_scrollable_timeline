@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'basic_example_page.dart';
 import 'expandable_example_page.dart';
+import 'youtube_example_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
         RouteNames.root: (context) => MainScreen(),
         RouteNames.simple: (context) => BasicExamplePage(),
         RouteNames.expandable: (context) => ExpandableExamplePage(),
-        RouteNames.youtube: (context) => BasicExamplePage(),
+        RouteNames.youtube: (context) => YouTubeExamplePage(),
       },
       debugShowCheckedModeBanner: true,
       theme: ThemeData(
