@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
 import 'utils/broadcast_ticker.dart';
@@ -10,14 +11,83 @@ class ExpandableExamplePage extends StatefulWidget {
   _ExpandableExamplePageState createState() => _ExpandableExamplePageState();
 }
 
-class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
-  double? timeline1Value;
-  double? timeline2Value;
-  double? timeline3Value;
-  final ticker = Ticker(0.0, 100.0);
-  final ticker2 = Ticker(0.0, 100.0);
-  final broadcastticker = BroadcastTicker(0.0, 100.0);
 
+class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
+  double? timelineValue;
+  final broadcastticker = BroadcastTicker(0.0, 100.0);
+  static const double timeLineHeight=100;
+  static const double rulerInsidePadding=0;
+  static const double rulerOutsidePadding=0;
+  static const double rulerSize=8;
+
+  Widget timelines1Widget() {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ScrollableTimelineF(
+              lengthSecs: 110,
+              stepSecs: 10,
+              height: timeLineHeight,
+              rulerOutsidePadding: rulerOutsidePadding,
+              rulerInsidePadding: rulerInsidePadding,
+              rulerSize: rulerSize,
+              timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
+              showCursor: true,
+              backgroundColor: Colors.lightBlue.shade50,
+              activeItemTextColor: Colors.blue.shade800,
+              passiveItemsTextColor: Colors.blue.shade300,
+              onDragEnd: updateSelectedTime),
+          Divider(),
+          Text(timelineValue.toString()),
+        ]
+    );
+  }
+
+  Widget timelines2Widget() {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          ScrollableTimelineF(
+              lengthSecs: 100,
+              stepSecs: 10,
+              height: timeLineHeight,
+              rulerOutsidePadding: rulerOutsidePadding,
+              rulerInsidePadding: rulerInsidePadding,
+              rulerSize: rulerSize,
+              timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
+              showCursor: true,
+              backgroundColor: Colors.lightBlue.shade50,
+              activeItemTextColor: Colors.blue.shade800,
+              passiveItemsTextColor: Colors.blue.shade300,
+              onDragEnd: updateSelectedTime),
+          ScrollableTimelineF(
+              lengthSecs: 100,
+              stepSecs: 2,
+              height: timeLineHeight,
+              rulerOutsidePadding: rulerOutsidePadding,
+              rulerInsidePadding: rulerInsidePadding,
+              rulerSize: rulerSize,
+              timeStream: broadcastticker.stream, ////ticker2.tick(ticks: 1000
+              showCursor: true,
+              showMinutes: false,
+              backgroundColor: Colors.lightBlue.shade100,
+              activeItemTextColor: Colors.blue.shade800,
+              passiveItemsTextColor: Colors.blue.shade300,
+              onDragEnd: updateSelectedTime),
+          Divider(),
+          Text(timelineValue.toString()),
+        ]
+    );
+  }
+
+  void updateSelectedTime(double t) {
+    print(
+        "*FLT* drag detected for ScrollableTimelineF to target time $t");
+    broadcastticker.curt = t.roundToDouble();
+    setState(() {
+      timelineValue = t;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,71 +95,10 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
             child: ScrollableTimelineSharedDragging(
                 child: SingleChildScrollView(
                     padding: EdgeInsets.all(10),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          /* TODO ScrollableTimeline removed from sample because dragging stopped working
-                          ScrollableTimeline(
-                            lengthSecs: 30,
-                            stepSecs: 5,
-                            height: 120,
-                            insideVertPadding: 10,
-                            timeStream: ticker.tick(ticks: 1000),
-                            onItemSelected: (value) {
-                              setState(() {
-                                timeline1Value = value;
-                              });
-                            },
-                            onDragEnd: (double t) {
-                              print("*FLT* drag detected to target time $t");
-                              ticker.curt = t.roundToDouble();
-                            },
-                          ),
-                          Text(timeline1Value.toString()),
-                          Divider(),
-                           */
-                          ScrollableTimelineF(
-                              lengthSecs: 100,
-                              stepSecs: 10,
-                              height: 120,
-                              insideVertPadding: 10,
-                              timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
-                              showCursor: true,
-                              backgroundColor: Colors.lightBlue.shade50,
-                              activeItemTextColor: Colors.blue.shade800,
-                              passiveItemsTextColor: Colors.blue.shade300,
-                              onDragEnd: (double t) {
-                                print(
-                                    "*FLT* drag detected for ScrollableTimelineF to target time $t");
-                                broadcastticker.curt = t.roundToDouble();
-                                setState(() {
-                                  timeline2Value = t;
-                                });
-                              }),
-                          Text(timeline2Value.toString()),
-                          Divider(),
-                          ScrollableTimelineF(
-                              lengthSecs: 100,
-                              stepSecs: 2,
-                              height: 120,
-                              insideVertPadding: 10,
-                              timeStream: broadcastticker.stream, ////ticker2.tick(ticks: 1000
-                              showCursor: true,
-                              showMinutes: false,
-                              backgroundColor: Colors.lightBlue.shade50,
-                              activeItemTextColor: Colors.blue.shade800,
-                              passiveItemsTextColor: Colors.blue.shade300,
-                              onDragEnd: (double t) {
-                                print(
-                                    "*FLT* drag detected for ScrollableTimelineF to target time $t");
-                                broadcastticker.curt = t.roundToDouble();
-                                setState(() {
-                                  timeline3Value = t;
-                                });
-                              }),
-                          Text(timeline3Value.toString()),
-                          Divider(),
-                        ]
+                    child: ExpandablePanel(
+                      header: Text("click to expand"),
+                      collapsed: timelines1Widget(),
+                      expanded: timelines2Widget(),
                     )
                 )
             )
