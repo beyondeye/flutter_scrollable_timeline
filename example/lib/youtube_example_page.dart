@@ -11,12 +11,12 @@ import 'widgets/player_state_section.dart';
 import 'widgets/source_input_section.dart';
 import 'widgets/volume_slider.dart';
 ///
-class YoutubeAppDemo extends StatefulWidget {
+class YoutubeExamplePage extends StatefulWidget {
   @override
-  _YoutubeAppDemoState createState() => _YoutubeAppDemoState();
+  _YoutubeExamplePageState createState() => _YoutubeExamplePageState();
 }
 
-class _YoutubeAppDemoState extends State<YoutubeAppDemo> {
+class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
   late YoutubePlayerController _controller;
 
   @override

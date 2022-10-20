@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         RouteNames.root: (context) => MainScreen(),
         RouteNames.simple: (context) => BasicExamplePage(),
         RouteNames.expandable: (context) => ExpandableExamplePage(),
-        RouteNames.youtube: (context) => YoutubeAppDemo(),
+        RouteNames.youtube: (context) => YoutubeExamplePage(),
       },
       debugShowCheckedModeBanner: true,
       theme: ThemeData(
