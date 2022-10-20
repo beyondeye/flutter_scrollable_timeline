@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:scrollable_timeline_example/utils/youtube_scrollable_timeline.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import 'widgets/meta_data_section.dart';
@@ -133,6 +134,8 @@ class Controls extends StatelessWidget {
           const VideoPositionSeeker(),
           _space,
           PlayerStateSection(),
+          _space,
+          YouTubeScrollableTimeline()
         ],
       ),
     );

@@ -15,7 +15,12 @@ class YoutubeTimeTicker {
   // see https://dart.dev/articles/libraries/creating-streams
 
   Future<void> tick(_) async {
-    curt = await yt.currentTime;
+    try {
+      curt = await yt.currentTime;
+    } catch (e) {
+      print("error reading current play time:${e}");
+    }
+    //print("tick :$curt ");
     _controller.add(curt); // Ask stream to send counter values as event.
   }
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
 import 'youtube_time_ticker.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-//import 'package:youtube_player_iframe_example/video_list_page.dart';
 
 
 class YouTubeScrollableTimeline extends StatefulWidget {
@@ -13,7 +12,6 @@ class YouTubeScrollableTimeline extends StatefulWidget {
 
 class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   YoutubeTimeTicker? ytTicker;
-  Duration videoLen= Duration(seconds:60); //default duration
   static const double timeFetchDelay=0.1;
   static const double timeLineHeight=100;
   static const double rulerInsidePadding=0;
@@ -23,12 +21,28 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   void initState() {
     super.initState();
   }
-  void updateSelectedTime(double t) {
-    print("*FLT* drag detected for ScrollableTimelineF to target time $t");
-    ytTicker?.curt = t.roundToDouble();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    //ytTicker cannot be initialized in initState because it need to read context.ytController that is not yet initialized
+    ytTicker = YoutubeTimeTicker(
+        yt: context.ytController, timeFetchDelay: timeFetchDelay);
+  }
+  void _pauseVideo(double t) {
+    ytTicker?.yt.pauseVideo();
+  }
+
+  void _updateSelectedTime(double t) {
+    //print("*FLT* drag detected for ScrollableTimelineF to target time $t");
     setState(() {
-      context.ytController.seekTo(seconds: t, allowSeekAhead: false); //TODO do I need allowSeekAhead true?
+      ytTicker?.curt = t.roundToDouble();
     });
+    _seekToNewTime(t);
+  }
+  Future<void> _seekToNewTime(double t) async {
+    await context.ytController.seekTo(seconds: t, allowSeekAhead: true); //TODO do I need allowSeekAhead true?
+    await context.ytController.playVideo();
   }
   @override
   Widget build(BuildContext context) {
@@ -37,24 +51,23 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
           return n.metaData.duration != o.metaData.duration;
         },
         builder: (context, value) {
-          ytTicker?.cancel();
-          ytTicker = YoutubeTimeTicker(
-              yt: context.ytController, timeFetchDelay: timeFetchDelay);
           int lengthSecs = value.metaData.duration.inSeconds + 1;
+          //print ("YouTubeScrollableTimeline lengthSecs $lengthSecs");
+          if(lengthSecs<20) lengthSecs=20; //to avoid exception when lenghtSecs<stepSecs
           return ScrollableTimelineSharedDragging(
               child: SingleChildScrollView(
                   padding: EdgeInsets.all(10),
                   child: ExpandablePanel(
                     header: Text("click to expand"),
-                    collapsed: timelines1Widget(lengthSecs),
-                    expanded: timelines2Widget(lengthSecs),
+                    collapsed: _timelines1Widget(lengthSecs),
+                    expanded: _timelines2Widget(lengthSecs),
                   )
               )
           );
         });
   }
 
-  Widget timelines1Widget(int lengthSecs) {
+  Widget _timelines1Widget(int lengthSecs) {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -70,12 +83,13 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
               passiveItemsTextColor: Colors.blue.shade300,
-              onDragEnd: updateSelectedTime),
+              onDragStart: _pauseVideo,
+              onDragEnd: _updateSelectedTime),
         ]
     );
   }
 
-  Widget timelines2Widget(int lengthSecs) {
+  Widget _timelines2Widget(int lengthSecs) {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -91,7 +105,8 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
               passiveItemsTextColor: Colors.blue.shade300,
-              onDragEnd: updateSelectedTime),
+              onDragStart: _pauseVideo,
+              onDragEnd: _updateSelectedTime),
           ScrollableTimelineF(
               lengthSecs: lengthSecs,
               stepSecs: 2,
@@ -105,7 +120,8 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               backgroundColor: Colors.lightBlue.shade100,
               activeItemTextColor: Colors.blue.shade800,
               passiveItemsTextColor: Colors.blue.shade300,
-              onDragEnd: updateSelectedTime),
+              onDragStart: _pauseVideo,
+              onDragEnd: _updateSelectedTime),
         ]
     );
   }
