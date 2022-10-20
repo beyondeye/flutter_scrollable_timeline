@@ -1,27 +1,23 @@
 import 'dart:async';
 
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
+
+/// a class to periodically fetch the current playing time from a YoutubePlayerController and
+/// send the value to broadcast stream
 class YoutubeTimeTicker {
-  final double tmin;
-  final double tmax;
-  final double tstep;
-  final int? ticks;
+  final YoutubePlayerController yt;
+  final double timeFetchDelay;
   double curt;
   late Stream<double> stream;
   // see https://dart.dev/articles/libraries/creating-streams
-  YoutubeTimeTicker(this.tmin, this.tmax, {this.tstep = 1.0, this.ticks=1000}):curt=tmin {
-    final interval =Duration(microseconds: (tstep*1000000).toInt());
+  YoutubeTimeTicker({required this.yt, required this.timeFetchDelay}):curt=0 {
+    final interval =Duration(microseconds: (timeFetchDelay*1000000).toInt());
     late StreamController<double> controller;
     Timer? timer;
-    int counter = 0;
 
-    void tick(_) {
-      curt += tstep;
-      curt = curt.clamp(tmin, tmax);
+    Future<void> tick(_) async {
+      curt = await yt.currentTime;
       controller.add(curt); // Ask stream to send counter values as event.
-      if (counter == ticks) {
-        timer?.cancel();
-        controller.close(); // Ask stream to shut down and tell listeners.
-      }
     }
 
     void startTimer() {
@@ -35,8 +31,6 @@ class YoutubeTimeTicker {
 
     controller = StreamController<double>.broadcast(
         onListen: startTimer,
-//        onPause: stopTimer,
-//        onResume: startTimer,
         onCancel: stopTimer);
 
     stream= controller.stream;
