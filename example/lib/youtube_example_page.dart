@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
+import 'package:scrollable_timeline_example/utils/youtube_time_ticker.dart';
 import 'utils/broadcast_ticker.dart';
 import 'utils/ticker.dart';
 
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 //import 'package:youtube_player_iframe_example/video_list_page.dart';
 
@@ -167,14 +167,15 @@ class _YoutubeAppDemoState extends State<YoutubeAppDemo> {
   Widget build(BuildContext context) {
     return YoutubePlayerScaffold(
       controller: _controller,
-      builder: (context, player) {
+      builder: (context, player) { //*DARIO* the player here is the widget containing the youtube player video area
         return Scaffold(
           appBar: AppBar(
             title: const Text('Youtube Player IFrame Demo'),
             actions: const [VideoPlaylistIconButton()],
           ),
-          body: LayoutBuilder(
+          body: LayoutBuilder( //*DARIO* LayoutBuilder is used to obtain the parent size constainsts and decide further layouts depending on it!
             builder: (context, constraints) {
+              //*DARIO* this is the flutter way to identify if we are running on web platform
               if (kIsWeb && constraints.maxWidth > 750) {
                 return Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +259,6 @@ class VideoPlaylistIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.ytController;
-
     return IconButton(
       onPressed: () async {
         controller.pauseVideo();
@@ -275,7 +275,7 @@ class VideoPlaylistIconButton extends StatelessWidget {
   }
 }
 
-///
+/// *DARIO* it reads the current playtime from getCurrentPositionStream
 class VideoPositionIndicator extends StatelessWidget {
   ///
   const VideoPositionIndicator({super.key});
@@ -283,14 +283,12 @@ class VideoPositionIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = context.ytController;
-
     return StreamBuilder<Duration>(
-      stream: controller.getCurrentPositionStream(),
+      stream: controller.getCurrentPositionStream(), //*DARIO* a stream that is periodically updated with current playing time
       initialData: Duration.zero,
       builder: (context, snapshot) {
         final position = snapshot.data?.inMilliseconds ?? 0;
         final duration = controller.metadata.duration.inMilliseconds;
-
         return LinearProgressIndicator(
           value: duration == 0 ? 0 : position / duration,
           minHeight: 1,
@@ -308,7 +306,6 @@ class VideoPositionSeeker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var value = 0.0;
-
     return Row(
       children: [
         const Text(
