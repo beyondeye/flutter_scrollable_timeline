@@ -34,16 +34,14 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
       ..onInit = () {
         _controller.loadPlaylist(
           list: [
-            'tcodrIK2P_I',
-            'nPt8bK2gbaU',
-            'K18cpp_-gP8',
-            'iLnmTe5Q2Qw',
-            '_WoCV4c6XOE',
-            'KmzdUe0RSJo',
-            '6jZDSSZZxjQ',
-            'p2lYr3vM_1w',
-            '7QUtEmBT_-w',
-            '34_PXCzGw1M',
+            'b_sQ9bMltGU', //introducing widget of the week
+            'DCKaFaU4jdk', //equality in dart
+            'wE7khGHVkYY', //how to create a stateless widget
+            'AqCMFXEmf3w', //how to create a statefull widget
+            'Zbm3hjPjQMk', //Inherited Widgets Explained
+            'kn0EOS-ZiIc', //When to Use Keys
+            'OTS-ap9_aXc', //Futures
+            'd_m5csmrf7I', //Flutter state management
           ],
           listType: ListType.playlist,
           startSeconds: 136,
