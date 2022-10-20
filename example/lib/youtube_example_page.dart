@@ -19,15 +19,14 @@ import 'widgets/player_state_section.dart';
 import 'widgets/source_input_section.dart';
 import 'widgets/volume_slider.dart';
 
-class YouTubeExamplePage extends StatefulWidget {
+class YouTubeScrollableTimeline extends StatefulWidget {
   @override
-  _YouTubeExamplePageState createState() => _YouTubeExamplePageState();
+  _YouTubeScrollableTimelineState createState() => _YouTubeScrollableTimelineState();
 }
 
 
-class _YouTubeExamplePageState extends State<YouTubeExamplePage> {
-  double? timelineValue;
-  final broadcastticker = BroadcastTicker(0.0, 100.0);
+class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
+  late YoutubeTimeTicker ytTicker;
   static const double timeLineHeight=100;
   static const double rulerInsidePadding=0;
   static const double rulerOutsidePadding=0;
@@ -44,14 +43,12 @@ class _YouTubeExamplePageState extends State<YouTubeExamplePage> {
               rulerOutsidePadding: rulerOutsidePadding,
               rulerInsidePadding: rulerInsidePadding,
               rulerSize: rulerSize,
-              timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
+              timeStream: ytTicker.stream, //ticker.tick(ticks: 1000
               showCursor: true,
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
               passiveItemsTextColor: Colors.blue.shade300,
               onDragEnd: updateSelectedTime),
-          Divider(),
-          Text(timelineValue.toString()),
         ]
     );
   }
@@ -67,7 +64,7 @@ class _YouTubeExamplePageState extends State<YouTubeExamplePage> {
               rulerOutsidePadding: rulerOutsidePadding,
               rulerInsidePadding: rulerInsidePadding,
               rulerSize: rulerSize,
-              timeStream: broadcastticker.stream, //ticker.tick(ticks: 1000
+              timeStream: ytTicker.stream, //ticker.tick(ticks: 1000
               showCursor: true,
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
@@ -80,40 +77,43 @@ class _YouTubeExamplePageState extends State<YouTubeExamplePage> {
               rulerOutsidePadding: rulerOutsidePadding,
               rulerInsidePadding: rulerInsidePadding,
               rulerSize: rulerSize,
-              timeStream: broadcastticker.stream, ////ticker2.tick(ticks: 1000
+              timeStream: ytTicker.stream, ////ticker2.tick(ticks: 1000
               showCursor: true,
               showMinutes: false,
               backgroundColor: Colors.lightBlue.shade100,
               activeItemTextColor: Colors.blue.shade800,
               passiveItemsTextColor: Colors.blue.shade300,
               onDragEnd: updateSelectedTime),
-          Divider(),
-          Text(timelineValue.toString()),
         ]
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    ytTicker = YoutubeTimeTicker(yt: context.ytController, timeFetchDelay: 0.1);
+  }
+
   void updateSelectedTime(double t) {
+    //TODO implement this
+    /*
     print(
         "*FLT* drag detected for ScrollableTimelineF to target time $t");
     broadcastticker.curt = t.roundToDouble();
     setState(() {
       timelineValue = t;
-    });
+    });    
+     */
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: SafeArea(
-            child: ScrollableTimelineSharedDragging(
-                child: SingleChildScrollView(
-                    padding: EdgeInsets.all(10),
-                    child: ExpandablePanel(
-                      header: Text("click to expand"),
-                      collapsed: timelines1Widget(),
-                      expanded: timelines2Widget(),
-                    )
-                )
+    return ScrollableTimelineSharedDragging(
+        child: SingleChildScrollView(
+            padding: EdgeInsets.all(10),
+            child: ExpandablePanel(
+              header: Text("click to expand"),
+              collapsed: timelines1Widget(),
+              expanded: timelines2Widget(),
             )
         )
     );
