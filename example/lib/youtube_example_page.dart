@@ -9,7 +9,6 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'widgets/meta_data_section.dart';
 import 'widgets/play_pause_button_bar.dart';
 import 'widgets/player_state_section.dart';
-import 'widgets/source_input_section.dart';
 import 'widgets/volume_slider.dart';
 ///
 class YoutubeExamplePage extends StatefulWidget {
@@ -19,7 +18,7 @@ class YoutubeExamplePage extends StatefulWidget {
 
 class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
   late YoutubePlayerController _controller;
-
+  static const showControls=false;
   @override
   void initState() {
     super.initState();
@@ -59,31 +58,34 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
       builder: (context, player) { //*DARIO* the player here is the widget containing the youtube player video area
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Youtube Player IFrame Demo'),
+            title: const Text('YouTube Example'),
             actions: const [VideoPlaylistIconButton()],
           ),
           body: LayoutBuilder( //*DARIO* LayoutBuilder is used to obtain the parent size constainsts and decide further layouts depending on it!
             builder: (context, constraints) {
               //*DARIO* this is the flutter way to identify if we are running on web platform
               if (kIsWeb && constraints.maxWidth > 750) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                return Column(
                   children: [
                     Expanded(
-                      flex: 3,
-                      child: Column(
-                        children: [
-                          player,
-                          const VideoPositionIndicator(),
-                        ],
-                      ),
-                    ),
-                    const Expanded(
-                      flex: 2,
-                      child: SingleChildScrollView(
-                        child: Controls(),
-                      ),
-                    ),
+                      flex: 6,
+                        child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 3, child: player),
+                        ...!showControls
+                            ? []
+                            : [
+                                const Expanded(
+                                  flex: 2,
+                                  child: SingleChildScrollView(
+                                    child: const Controls(),
+                                  ),
+                                )
+                              ]
+                      ],
+                    )),
+                    Expanded(flex: 3,child: YouTubeScrollableTimeline())
                   ],
                 );
               }
@@ -91,8 +93,8 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
               return ListView(
                 children: [
                   player,
-                  const VideoPositionIndicator(),
-                  const Controls(),
+                  YouTubeScrollableTimeline(),
+                  ...!showControls ? [] : [const Controls()],
                 ],
               );
             },
@@ -122,18 +124,17 @@ class Controls extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MetaDataSection(),
-          _space,
-          SourceInputSection(),
+//          _space,
+//          SourceInputSection(),
           _space,
           PlayPauseButtonBar(),
           _space,
           const VolumeSlider(),
           _space,
-          const VideoPositionSeeker(),
-          _space,
+//          const VideoPositionSeeker(),
+//          _space,
           PlayerStateSection(),
-          _space,
-          YouTubeScrollableTimeline()
+
         ],
       ),
     );

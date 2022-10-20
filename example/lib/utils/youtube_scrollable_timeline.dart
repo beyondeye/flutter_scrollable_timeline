@@ -1,6 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
+import 'click_to_expand_message.dart';
 import 'youtube_time_ticker.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
@@ -58,7 +59,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               child: SingleChildScrollView(
                   padding: EdgeInsets.all(10),
                   child: ExpandablePanel(
-                    header: Text("click to expand"),
+                    header: clickToExpandMessage(),
                     collapsed: _timelines1Widget(lengthSecs),
                     expanded: _timelines2Widget(lengthSecs),
                   )
@@ -66,6 +67,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
           );
         });
   }
+
 
   Widget _timelines1Widget(int lengthSecs) {
     return Column(

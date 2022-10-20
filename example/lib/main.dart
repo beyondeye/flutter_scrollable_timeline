@@ -45,21 +45,21 @@ class MainScreen extends StatelessWidget {
         body: Center(
       child: Column(
         children: [
-          Divider(thickness: 10),
+          SizedBox(height: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {
                 Navigator.pushNamed(context, RouteNames.simple);
               },
               child: Text("simple example")),
-          Divider(thickness: 10),
+          SizedBox(height: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {
                 Navigator.pushNamed(context, RouteNames.expandable);
               },
               child: Text("expandable example")),
-          Divider(thickness: 10),
+          SizedBox(height: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {

@@ -1,10 +1,8 @@
-import 'dart:async';
-
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
+import 'utils/click_to_expand_message.dart';
 import 'utils/broadcast_ticker.dart';
-import 'utils/ticker.dart';
 
 class ExpandableExamplePage extends StatefulWidget {
   @override
@@ -96,7 +94,7 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
                 child: SingleChildScrollView(
                     padding: EdgeInsets.all(10),
                     child: ExpandablePanel(
-                      header: Text("click to expand"),
+                      header: clickToExpandMessage(),
                       collapsed: timelines1Widget(),
                       expanded: timelines2Widget(),
                     )
