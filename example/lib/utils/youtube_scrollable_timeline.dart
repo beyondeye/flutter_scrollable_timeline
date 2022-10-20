@@ -7,8 +7,6 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 
 class YouTubeScrollableTimeline extends StatefulWidget {
-  YoutubePlayerController yt;
-  YouTubeScrollableTimeline(this.yt);
   @override
   _YouTubeScrollableTimelineState createState() => _YouTubeScrollableTimelineState();
 }
@@ -21,6 +19,40 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   static const double rulerInsidePadding=0;
   static const double rulerOutsidePadding=0;
   static const double rulerSize=8;
+  @override
+  void initState() {
+    super.initState();
+  }
+  void updateSelectedTime(double t) {
+    print("*FLT* drag detected for ScrollableTimelineF to target time $t");
+    ytTicker?.curt = t.roundToDouble();
+    setState(() {
+      context.ytController.seekTo(seconds: t, allowSeekAhead: false); //TODO do I need allowSeekAhead true?
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return YoutubeValueBuilder( //update this widget when video duration updated
+        buildWhen: (o,n) {
+          return n.metaData.duration != o.metaData.duration;
+        },
+        builder: (context, value) {
+          ytTicker?.cancel();
+          ytTicker = YoutubeTimeTicker(
+              yt: context.ytController, timeFetchDelay: timeFetchDelay);
+          int lengthSecs = value.metaData.duration.inSeconds + 1;
+          return ScrollableTimelineSharedDragging(
+              child: SingleChildScrollView(
+                  padding: EdgeInsets.all(10),
+                  child: ExpandablePanel(
+                    header: Text("click to expand"),
+                    collapsed: timelines1Widget(lengthSecs),
+                    expanded: timelines2Widget(lengthSecs),
+                  )
+              )
+          );
+        });
+  }
 
   Widget timelines1Widget(int lengthSecs) {
     return Column(
@@ -78,39 +110,4 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void updateSelectedTime(double t) {
-    print("*FLT* drag detected for ScrollableTimelineF to target time $t");
-    ytTicker?.curt = t.roundToDouble();
-    setState(() {
-      context.ytController.seekTo(seconds: t, allowSeekAhead: false); //TODO do I need allowSeekAhead true?
-    });
-  }
-  @override
-  Widget build(BuildContext context) {
-    return YoutubeValueBuilder(
-        buildWhen: (o,n) {
-          return n.metaData.duration != o.metaData.duration;
-        },
-        builder: (context, value) {
-          ytTicker?.cancel();
-          ytTicker = YoutubeTimeTicker(
-              yt: context.ytController, timeFetchDelay: timeFetchDelay);
-          int lengthSecs = value.metaData.duration.inSeconds + 1;
-          return ScrollableTimelineSharedDragging(
-              child: SingleChildScrollView(
-                  padding: EdgeInsets.all(10),
-                  child: ExpandablePanel(
-                    header: Text("click to expand"),
-                    collapsed: timelines1Widget(lengthSecs),
-                    expanded: timelines2Widget(lengthSecs),
-                  )
-              )
-          );
-        });
-  }
 }
