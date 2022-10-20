@@ -1,125 +1,15 @@
-import 'dart:async';
-
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:scrollable_timeline/scrollable_timeline.dart';
-import 'package:scrollable_timeline_example/utils/youtube_time_ticker.dart';
-import 'utils/broadcast_ticker.dart';
-import 'utils/ticker.dart';
 
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
-//import 'package:youtube_player_iframe_example/video_list_page.dart';
 
 import 'widgets/meta_data_section.dart';
 import 'widgets/play_pause_button_bar.dart';
 import 'widgets/player_state_section.dart';
 import 'widgets/source_input_section.dart';
 import 'widgets/volume_slider.dart';
-
-class YouTubeScrollableTimeline extends StatefulWidget {
-  @override
-  _YouTubeScrollableTimelineState createState() => _YouTubeScrollableTimelineState();
-}
-
-
-class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
-  late YoutubeTimeTicker ytTicker;
-  static const double timeLineHeight=100;
-  static const double rulerInsidePadding=0;
-  static const double rulerOutsidePadding=0;
-  static const double rulerSize=8;
-
-  Widget timelines1Widget() {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ScrollableTimelineF(
-              lengthSecs: 110,
-              stepSecs: 10,
-              height: timeLineHeight,
-              rulerOutsidePadding: rulerOutsidePadding,
-              rulerInsidePadding: rulerInsidePadding,
-              rulerSize: rulerSize,
-              timeStream: ytTicker.stream, //ticker.tick(ticks: 1000
-              showCursor: true,
-              backgroundColor: Colors.lightBlue.shade50,
-              activeItemTextColor: Colors.blue.shade800,
-              passiveItemsTextColor: Colors.blue.shade300,
-              onDragEnd: updateSelectedTime),
-        ]
-    );
-  }
-
-  Widget timelines2Widget() {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ScrollableTimelineF(
-              lengthSecs: 100,
-              stepSecs: 10,
-              height: timeLineHeight,
-              rulerOutsidePadding: rulerOutsidePadding,
-              rulerInsidePadding: rulerInsidePadding,
-              rulerSize: rulerSize,
-              timeStream: ytTicker.stream, //ticker.tick(ticks: 1000
-              showCursor: true,
-              backgroundColor: Colors.lightBlue.shade50,
-              activeItemTextColor: Colors.blue.shade800,
-              passiveItemsTextColor: Colors.blue.shade300,
-              onDragEnd: updateSelectedTime),
-          ScrollableTimelineF(
-              lengthSecs: 100,
-              stepSecs: 2,
-              height: timeLineHeight,
-              rulerOutsidePadding: rulerOutsidePadding,
-              rulerInsidePadding: rulerInsidePadding,
-              rulerSize: rulerSize,
-              timeStream: ytTicker.stream, ////ticker2.tick(ticks: 1000
-              showCursor: true,
-              showMinutes: false,
-              backgroundColor: Colors.lightBlue.shade100,
-              activeItemTextColor: Colors.blue.shade800,
-              passiveItemsTextColor: Colors.blue.shade300,
-              onDragEnd: updateSelectedTime),
-        ]
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    ytTicker = YoutubeTimeTicker(yt: context.ytController, timeFetchDelay: 0.1);
-  }
-
-  void updateSelectedTime(double t) {
-    //TODO implement this
-    /*
-    print(
-        "*FLT* drag detected for ScrollableTimelineF to target time $t");
-    broadcastticker.curt = t.roundToDouble();
-    setState(() {
-      timelineValue = t;
-    });    
-     */
-  }
-  @override
-  Widget build(BuildContext context) {
-    return ScrollableTimelineSharedDragging(
-        child: SingleChildScrollView(
-            padding: EdgeInsets.all(10),
-            child: ExpandablePanel(
-              header: Text("click to expand"),
-              collapsed: timelines1Widget(),
-              expanded: timelines2Widget(),
-            )
-        )
-    );
-  }
-}
-
 ///
 class YoutubeAppDemo extends StatefulWidget {
   @override
