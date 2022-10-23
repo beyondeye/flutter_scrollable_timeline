@@ -1,7 +1,7 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
-import '../utils/click_to_expand_message.dart';
+import '../widgets/click_to_expand_message.dart';
 import '../tickers/broadcast_ticker.dart';
 
 class ExpandableExamplePage extends StatefulWidget {
