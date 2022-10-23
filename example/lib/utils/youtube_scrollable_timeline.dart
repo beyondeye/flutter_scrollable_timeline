@@ -7,17 +7,26 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 
 class YouTubeScrollableTimeline extends StatefulWidget {
+  final int shownSecsMultiples;
+  final double timeFetchDelay;
+  final double timeLineHeight;
+  final double rulerInsidePadding;
+  final double rulerOutsidePadding;
+  final double rulerSize;
+
+  YouTubeScrollableTimeline({
+    this.shownSecsMultiples=1,
+    this.timeFetchDelay=0.05,
+    this.timeLineHeight=100,
+    this.rulerInsidePadding=0,
+    this.rulerOutsidePadding=0,
+    this.rulerSize=8});
   @override
   _YouTubeScrollableTimelineState createState() => _YouTubeScrollableTimelineState();
 }
 
 class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   YoutubeTimeTicker? ytTicker;
-  static const double timeFetchDelay=0.05; //20 frames per second
-  static const double timeLineHeight=100;
-  static const double rulerInsidePadding=0;
-  static const double rulerOutsidePadding=0;
-  static const double rulerSize=8;
   @override
   void initState() {
     super.initState();
@@ -28,7 +37,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
     super.didChangeDependencies();
     //ytTicker cannot be initialized in initState because it need to read context.ytController that is not yet initialized
     ytTicker = YoutubeTimeTicker(
-        yt: context.ytController, timeFetchDelay: timeFetchDelay);
+        yt: context.ytController, timeFetchDelay: widget.timeFetchDelay);
   }
   void _pauseVideo(double t) {
     ytTicker?.yt.pauseVideo();
@@ -76,10 +85,10 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
           ScrollableTimelineF(
               lengthSecs: lengthSecs,
               stepSecs: 10,
-              height: timeLineHeight,
-              rulerOutsidePadding: rulerOutsidePadding,
-              rulerInsidePadding: rulerInsidePadding,
-              rulerSize: rulerSize,
+              height: widget.timeLineHeight,
+              rulerOutsidePadding: widget.rulerOutsidePadding,
+              rulerInsidePadding: widget.rulerInsidePadding,
+              rulerSize: widget.rulerSize,
               timeStream: ytTicker?.stream, //ticker.tick(ticks: 1000
               showCursor: true,
               backgroundColor: Colors.lightBlue.shade50,
@@ -98,10 +107,10 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
           ScrollableTimelineF(
               lengthSecs: lengthSecs,
               stepSecs: 10,
-              height: timeLineHeight,
-              rulerOutsidePadding: rulerOutsidePadding,
-              rulerInsidePadding: rulerInsidePadding,
-              rulerSize: rulerSize,
+              height: widget.timeLineHeight,
+              rulerOutsidePadding: widget.rulerOutsidePadding,
+              rulerInsidePadding: widget.rulerInsidePadding,
+              rulerSize: widget.rulerSize,
               timeStream: ytTicker?.stream, //ticker.tick(ticks: 1000
               showCursor: true,
               backgroundColor: Colors.lightBlue.shade50,
@@ -112,11 +121,11 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
           ScrollableTimelineF(
               lengthSecs: lengthSecs,
               stepSecs: 1,
-              shownSecsMultiples: 5,
-              height: timeLineHeight,
-              rulerOutsidePadding: rulerOutsidePadding,
-              rulerInsidePadding: rulerInsidePadding,
-              rulerSize: rulerSize,
+              shownSecsMultiples: widget.shownSecsMultiples,
+              height: widget.timeLineHeight,
+              rulerOutsidePadding: widget.rulerOutsidePadding,
+              rulerInsidePadding: widget.rulerInsidePadding,
+              rulerSize: widget.rulerSize,
               timeStream: ytTicker?.stream, ////ticker2.tick(ticks: 1000
               showCursor: true,
               showMinutes: false,

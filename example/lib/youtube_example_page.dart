@@ -63,8 +63,10 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
           ),
           body: LayoutBuilder( //*DARIO* LayoutBuilder is used to obtain the parent size constainsts and decide further layouts depending on it!
             builder: (context, constraints) {
+              int shownSecsMultiples=2; //defalt value (mobile)
               //*DARIO* this is the flutter way to identify if we are running on web platform
               if (kIsWeb && constraints.maxWidth > 750) {
+                shownSecsMultiples=5;
                 return Column(
                   children: [
                     Expanded(
@@ -85,7 +87,7 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
                               ]
                       ],
                     )),
-                    Expanded(flex: 3,child: YouTubeScrollableTimeline())
+                    Expanded(flex: 3,child: YouTubeScrollableTimeline(shownSecsMultiples:shownSecsMultiples))
                   ],
                 );
               }
@@ -93,7 +95,7 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
               return ListView(
                 children: [
                   player,
-                  YouTubeScrollableTimeline(),
+                  YouTubeScrollableTimeline(shownSecsMultiples:shownSecsMultiples),
                   ...!showControls ? [] : [const Controls()],
                 ],
               );
