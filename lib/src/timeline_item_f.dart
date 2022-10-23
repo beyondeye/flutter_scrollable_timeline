@@ -13,11 +13,11 @@ class TimelineItemF extends StatefulWidget {
   const TimelineItemF(
     this.curItem,
     this.backgroundColor,
-      this.rulerOutsidePadding,
-      this.rulerSize,
-      this.rulerInsidePadding,
-      {Key? key}
-      ) : super(key: key);
+    this.rulerOutsidePadding,
+    this.rulerSize,
+    this.rulerInsidePadding,
+    {Key? key}
+    ) : super(key: key);
 
   @override
   _TimelineItemFState createState() => _TimelineItemFState();
@@ -32,7 +32,8 @@ class _TimelineItemFState extends State<TimelineItemF> {
     super.initState();
 
     final curItem= widget.curItem;
-    secsText = curItem.tSecs.toString();
+    final secs=curItem.tSecs;
+    secsText = secs?.toString() ?? "|";
     minsText = curItem.tMins?.toString();
   }
 
