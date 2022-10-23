@@ -43,7 +43,7 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
             'd_m5csmrf7I', //Flutter state management
           ],
           listType: ListType.playlist,
-          startSeconds: 136,
+          startSeconds: 0,
         );
       }
       ..onFullscreenChange = (isFullScreen) {
