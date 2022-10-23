@@ -16,9 +16,8 @@ class TimelineItemF extends StatefulWidget {
       this.rulerOutsidePadding,
       this.rulerSize,
       this.rulerInsidePadding,
-  {
-    Key? key,
-  }) : super(key: key);
+      {Key? key}
+      ) : super(key: key);
 
   @override
   _TimelineItemFState createState() => _TimelineItemFState();
