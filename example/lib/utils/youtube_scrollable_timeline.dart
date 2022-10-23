@@ -13,7 +13,7 @@ class YouTubeScrollableTimeline extends StatefulWidget {
 
 class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   YoutubeTimeTicker? ytTicker;
-  static const double timeFetchDelay=0.1;
+  static const double timeFetchDelay=0.05; //20 frames per second
   static const double timeLineHeight=100;
   static const double rulerInsidePadding=0;
   static const double rulerOutsidePadding=0;
@@ -111,7 +111,8 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               onDragEnd: _updateSelectedTime),
           ScrollableTimelineF(
               lengthSecs: lengthSecs,
-              stepSecs: 2,
+              stepSecs: 1,
+              shownSecsMultiples: 5,
               height: timeLineHeight,
               rulerOutsidePadding: rulerOutsidePadding,
               rulerInsidePadding: rulerInsidePadding,
