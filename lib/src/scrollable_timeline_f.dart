@@ -32,6 +32,8 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final Color backgroundColor;
   final bool showCursor;
   final bool showMinutes;
+  // if not 1 then print actual number for seconds only they are an integer multiple of shownSecsMultiples
+  final int  shownSecsMultiples;
   final Color cursorColor;
   final Color activeItemTextColor;
   final Color passiveItemsTextColor;
@@ -56,6 +58,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
       this.backgroundColor = Colors.white,
       this.showCursor = true,
       this.showMinutes = true,
+      this.shownSecsMultiples = 1,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
       this.passiveItemsTextColor = Colors.grey,
@@ -65,7 +68,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
         assert(lengthSecs > stepSecs),
         assert(rulerSize>=8,"rulerSize smaller than 8 will cause graphic glitches"),
       pixPerSecs=itemExtent/stepSecs,
-        divisions=(lengthSecs / stepSecs).ceil() + 1;
+        divisions=(lengthSecs / stepSecs).ceil() + 1; //divisions changes when lenghtSecs is updated apparently this causes the bug!
 
   @override
   _ScrollableTimelineFState createState() => _ScrollableTimelineFState();
@@ -210,13 +213,24 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
       int i=index-widget.nPadItems;
       int t=i*widget.stepSecs;
       final secs = t % 60;
+
+      final shownSecs= (secs % widget.shownSecsMultiples==0) ? secs : null;
       int? mins;
       if(widget.showMinutes) {
         mins = (t / 60).floor();
       }
-      itemData=TimelineItemData(t:t, tMins: mins, tSecs: secs, color: widget.passiveItemsTextColor, fontSize: 14.0);
+      itemData=TimelineItemData(t:t, tMins: mins, tSecs: shownSecs, color: widget.passiveItemsTextColor, fontSize: 14.0);
     }
-    return TimelineItemF(itemData, widget.backgroundColor,widget.rulerOutsidePadding,widget.rulerSize,widget.rulerInsidePadding);
+    return TimelineItemF(itemData,
+        widget.backgroundColor,
+        widget.rulerOutsidePadding,
+        widget.rulerSize,
+        widget.rulerInsidePadding,
+        //IMPORTANT: need to specify the key because otherwise, if timeline is updated, the updated TimelineItem object will not be recognized
+        //see https://docs.flutter.dev/development/ui/widgets-intro#keys
+        //see https://api.flutter.dev/flutter/foundation/Key-class.html
+        //see https://www.youtube.com/watch?v=kn0EOS-ZiIc
+        key: UniqueKey() ); //TODO I could use ObjectKey(itemData) instead
   }
   //------------------------------------------------------------
   // the actual timeline ui
