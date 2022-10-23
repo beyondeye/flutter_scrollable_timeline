@@ -22,7 +22,7 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ScrollableTimelineF(
+          ScrollableTimeline(
               lengthSecs: 110,
               stepSecs: 10,
               height: timeLineHeight,
@@ -45,7 +45,7 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ScrollableTimelineF(
+          ScrollableTimeline(
               lengthSecs: 100,
               stepSecs: 10,
               height: timeLineHeight,
@@ -58,7 +58,7 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
               activeItemTextColor: Colors.blue.shade800,
               passiveItemsTextColor: Colors.blue.shade300,
               onDragEnd: updateSelectedTime),
-          ScrollableTimelineF(
+          ScrollableTimeline(
               lengthSecs: 100,
               stepSecs: 2,
               height: timeLineHeight,

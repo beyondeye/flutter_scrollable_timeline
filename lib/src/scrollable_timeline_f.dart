@@ -19,7 +19,7 @@ void _stub(double t) {}
 ///        center. the value of required pad items is  <= 0.5*(widget width)/(itemExtent)
 ///        TODO: wait for when widget width is available (see for https://github.com/ayham95/Measured-Size/blob/main/lib/measured_size.dart)
 ///              and automatically define the required number of pad items
-class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine {
+class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine {
   final int lengthSecs;
   final int stepSecs;
   final Stream<double>? timeStream;
@@ -41,7 +41,7 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
   final double pixPerSecs;
   final int nPadItems;
   final int divisions;
-  ScrollableTimelineF(
+  ScrollableTimeline(
       {required this.lengthSecs,
       required this.stepSecs,
       this.timeStream,
@@ -71,10 +71,10 @@ class ScrollableTimelineF extends StatefulWidget  implements IScrollableTimeLine
         divisions=(lengthSecs / stepSecs).ceil() + 1; //divisions changes when lenghtSecs is updated apparently this causes the bug!
 
   @override
-  _ScrollableTimelineFState createState() => _ScrollableTimelineFState();
+  _ScrollableTimelineState createState() => _ScrollableTimelineState();
 }
 
-class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
+class _ScrollableTimelineState extends State<ScrollableTimeline> {
   // Similar to a standard [ScrollController] but with the added convenience
   // mechanisms to read and go to item indices rather than a raw pixel scroll
   late ScrollController _scrollController;
@@ -205,7 +205,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
   }
 
   //------------------------------------------------------------
-  TimelineItemF _itemBuilder(BuildContext buildContext, int index) {
+  TimelineItem _itemBuilder(BuildContext buildContext, int index) {
     TimelineItemData itemData;
     if(index<widget.nPadItems || index>=widget.nPadItems+widget.divisions) {
       itemData=TimelineItemData(t: 0, tMins: 0, tSecs: 0, color: widget.backgroundColor, fontSize: 14);
@@ -221,7 +221,7 @@ class _ScrollableTimelineFState extends State<ScrollableTimelineF> {
       }
       itemData=TimelineItemData(t:t, tMins: mins, tSecs: shownSecs, color: widget.passiveItemsTextColor, fontSize: 14.0);
     }
-    return TimelineItemF(itemData,
+    return TimelineItem(itemData,
         widget.backgroundColor,
         widget.rulerOutsidePadding,
         widget.rulerSize,

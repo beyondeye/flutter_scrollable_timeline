@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'iscrollable_timeline.dart';
 import 'timeline_item_data.dart';
 
-class TimelineItemF extends StatefulWidget {
+class TimelineItem extends StatefulWidget {
   final TimelineItemData curItem;
   // potentially independent bg color for each item
   final Color backgroundColor;
@@ -10,7 +10,7 @@ class TimelineItemF extends StatefulWidget {
   final double rulerSize;
   final double rulerInsidePadding;
 
-  const TimelineItemF(
+  const TimelineItem(
     this.curItem,
     this.backgroundColor,
     this.rulerOutsidePadding,
@@ -20,10 +20,10 @@ class TimelineItemF extends StatefulWidget {
     ) : super(key: key);
 
   @override
-  _TimelineItemFState createState() => _TimelineItemFState();
+  _TimelineItemState createState() => _TimelineItemState();
 }
 
-class _TimelineItemFState extends State<TimelineItemF> {
+class _TimelineItemState extends State<TimelineItem> {
   late String? minsText;
   late String secsText;
 

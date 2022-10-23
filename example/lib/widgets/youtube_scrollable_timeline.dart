@@ -82,7 +82,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ScrollableTimelineF(
+          ScrollableTimeline(
               lengthSecs: lengthSecs,
               stepSecs: 10,
               height: widget.timeLineHeight,
@@ -104,7 +104,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
     return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          ScrollableTimelineF(
+          ScrollableTimeline(
               lengthSecs: lengthSecs,
               stepSecs: 10,
               height: widget.timeLineHeight,
@@ -118,7 +118,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               passiveItemsTextColor: Colors.blue.shade300,
               onDragStart: _pauseVideo,
               onDragEnd: _updateSelectedTime),
-          ScrollableTimelineF(
+          ScrollableTimeline(
               lengthSecs: lengthSecs,
               stepSecs: 1,
               shownSecsMultiples: widget.shownSecsMultiples,

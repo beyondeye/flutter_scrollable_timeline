@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
 import '../tickers/broadcast_ticker.dart';
-import '../tickers/ticker.dart';
 
 
 class BasicExamplePage extends StatefulWidget {
@@ -12,11 +9,8 @@ class BasicExamplePage extends StatefulWidget {
 }
 
 class _BasicExamplePageState extends State<BasicExamplePage> {
-  double? timeline1Value;
-  double? timeline2Value;
-  double? timeline3Value;
-  final ticker = Ticker(0.0, 100.0);
-  final ticker2 = Ticker(0.0, 100.0);
+  double? selectedTimeFromTopLine;
+  double? selectedTimeFromBottomline;
   final broadcastticker = BroadcastTicker(0.0, 100.0);
 
   @override
@@ -29,27 +23,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          /* TODO ScrollableTimeline removed from sample because dragging stopped working
                           ScrollableTimeline(
-                            lengthSecs: 30,
-                            stepSecs: 5,
-                            height: 120,
-                            insideVertPadding: 10,
-                            timeStream: ticker.tick(ticks: 1000),
-                            onItemSelected: (value) {
-                              setState(() {
-                                timeline1Value = value;
-                              });
-                            },
-                            onDragEnd: (double t) {
-                              print("*FLT* drag detected to target time $t");
-                              ticker.curt = t.roundToDouble();
-                            },
-                          ),
-                          Text(timeline1Value.toString()),
-                          Divider(),
-                           */
-                          ScrollableTimelineF(
                               lengthSecs: 100,
                               stepSecs: 10,
                               height: 120,
@@ -64,12 +38,12 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                                     "*FLT* drag detected for ScrollableTimelineF to target time $t");
                                 broadcastticker.curt = t.roundToDouble();
                                 setState(() {
-                                  timeline2Value = t;
+                                  selectedTimeFromTopLine = t;
                                 });
                               }),
-                          Text(timeline2Value.toString()),
+                          Text(selectedTimeFromTopLine.toString()),
                           Divider(),
-                          ScrollableTimelineF(
+                          ScrollableTimeline(
                               lengthSecs: 100,
                               stepSecs: 2,
                               height: 120,
@@ -85,10 +59,10 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                                     "*FLT* drag detected for ScrollableTimelineF to target time $t");
                                 broadcastticker.curt = t.roundToDouble();
                                 setState(() {
-                                  timeline3Value = t;
+                                  selectedTimeFromBottomline = t;
                                 });
                               }),
-                          Text(timeline3Value.toString()),
+                          Text(selectedTimeFromBottomline.toString()),
                           Divider(),
                         ]
                     )

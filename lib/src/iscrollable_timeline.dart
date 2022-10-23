@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'timeline_item_data.dart';
 
+/// base class for ScrollableTimeline implementations, with common code
 abstract class IScrollableTimeLine {
   abstract final int lengthSecs;
   abstract final int stepSecs;
