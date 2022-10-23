@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
-import 'utils/broadcast_ticker.dart';
-import 'utils/ticker.dart';
+import '../tickers/broadcast_ticker.dart';
+import '../tickers/ticker.dart';
 
 
 class BasicExamplePage extends StatefulWidget {

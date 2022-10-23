@@ -1,8 +1,8 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:scrollable_timeline/scrollable_timeline.dart';
-import 'click_to_expand_message.dart';
-import 'youtube_time_ticker.dart';
+import '../utils/click_to_expand_message.dart';
+import '../tickers/youtube_time_ticker.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 

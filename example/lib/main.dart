@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'basic_example_page.dart';
-import 'expandable_example_page.dart';
-import 'youtube_example_page.dart';
+import 'pages/basic_example_page.dart';
+import 'pages/expandable_example_page.dart';
+import 'pages/youtube_example_page.dart';
 
 void main() => runApp(MyApp());
 
