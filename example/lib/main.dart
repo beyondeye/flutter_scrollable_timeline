@@ -45,21 +45,21 @@ class MainScreen extends StatelessWidget {
         body: Center(
       child: Column(
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {
                 Navigator.pushNamed(context, RouteNames.simple);
               },
               child: Text("simple example")),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {
                 Navigator.pushNamed(context, RouteNames.expandable);
               },
               child: Text("expandable example")),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ElevatedButton(
               style: btnStyle,
               onPressed: () {
