@@ -18,7 +18,7 @@ class YoutubeTimeTicker {
     try {
       curt = await yt.currentTime;
     } catch (e) {
-      print("error reading current play time:${e}");
+      print("error reading current play time:$e");
     }
     //print("tick :$curt ");
     _controller.add(curt); // Ask stream to send counter values as event.
