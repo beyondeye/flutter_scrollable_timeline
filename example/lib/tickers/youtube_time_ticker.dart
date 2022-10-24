@@ -4,6 +4,7 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 /// a class to periodically fetch the current playing time from a YoutubePlayerController and
 /// send the value to broadcast stream
+/// see also https://dart.dev/articles/libraries/creating-streams
 /// TODO look at implementation of YoutubePlayerController.getCurrentPositionStream
 class YoutubeTimeTicker {
   final YoutubePlayerController yt;
@@ -12,7 +13,6 @@ class YoutubeTimeTicker {
   late StreamController<double> _controller;
   late Stream<double> stream;
   Timer? _timer;
-  // see https://dart.dev/articles/libraries/creating-streams
 
   Future<void> tick(_) async {
     try {
@@ -25,7 +25,7 @@ class YoutubeTimeTicker {
   }
 
   void _startTimer() {
-    final interval =Duration(microseconds: (timeFetchDelay*1000000).toInt());
+    final interval = Duration(microseconds: (timeFetchDelay*1000000).toInt());
     _timer = Timer.periodic(interval, tick);
   }
 
@@ -35,12 +35,9 @@ class YoutubeTimeTicker {
   }
 
   YoutubeTimeTicker({required this.yt, required this.timeFetchDelay}):curt=0 {
-
-
     _controller = StreamController<double>.broadcast(
         onListen: _startTimer,
         onCancel: _stopTimer);
-
     stream= _controller.stream;
   }
 
