@@ -24,6 +24,7 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
     super.initState();
     _controller = YoutubePlayerController(
       params: const YoutubePlayerParams(
+        //show standard youtube control at the bottom of video window
         showControls: true,
         mute: false,
         showFullscreenButton: true,
@@ -55,16 +56,15 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
   Widget build(BuildContext context) {
     return YoutubePlayerScaffold(
       controller: _controller,
-      builder: (context, player) { //*DARIO* the player here is the widget containing the youtube player video area
+      builder: (context, player) { //the player argument here is the widget containing the youtube player video area
         return Scaffold(
           appBar: AppBar(
             title: const Text('YouTube Example'),
-            actions: const [VideoPlaylistIconButton()],
           ),
-          body: LayoutBuilder( //*DARIO* LayoutBuilder is used to obtain the parent size constainsts and decide further layouts depending on it!
+          body: LayoutBuilder( // LayoutBuilder is used to obtain the parent size constraints and decide further layouts depending on it!
             builder: (context, constraints) {
               int shownSecsMultiples=2; //defalt value (mobile)
-              //*DARIO* this is the flutter way to identify if we are running on web platform
+              //check if we are running in a browser on a desktop pc
               if (kIsWeb && constraints.maxWidth > 750) {
                 shownSecsMultiples=5;
                 return Column(
@@ -81,7 +81,7 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
                                 const Expanded(
                                   flex: 2,
                                   child: SingleChildScrollView(
-                                    child: const Controls(),
+                                    child: const VideoExternalControls(),
                                   ),
                                 )
                               ]
@@ -96,7 +96,7 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
                 children: [
                   player,
                   YouTubeScrollableTimeline(shownSecsMultiples:shownSecsMultiples),
-                  ...!showControls ? [] : [const Controls()],
+                  ...!showControls ? [] : [const VideoExternalControls()],
                 ],
               );
             },
@@ -113,10 +113,11 @@ class _YoutubeExamplePageState extends State<YoutubeExamplePage> {
   }
 }
 
-///
-class Controls extends StatelessWidget {
+/// this widget shows the youtube video controls
+/// and video information outside the standard youtube embed window
+class VideoExternalControls extends StatelessWidget {
   ///
-  const Controls();
+  const VideoExternalControls();
 
   @override
   Widget build(BuildContext context) {
@@ -126,15 +127,11 @@ class Controls extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           MetaDataSection(),
-//          _space,
-//          SourceInputSection(),
           _space,
           PlayPauseButtonBar(),
           _space,
           const VolumeSlider(),
           _space,
-//          const VideoPositionSeeker(),
-//          _space,
           PlayerStateSection(),
 
         ],
@@ -143,102 +140,4 @@ class Controls extends StatelessWidget {
   }
 
   Widget get _space => const SizedBox(height: 10);
-}
-
-///
-class VideoPlaylistIconButton extends StatelessWidget {
-  ///
-  const VideoPlaylistIconButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = context.ytController;
-    return IconButton(
-      onPressed: () async {
-        controller.pauseVideo();
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Text("") /* const VideoListPage(), */
-          ),
-        );
-        controller.playVideo();
-      },
-      icon: const Icon(Icons.playlist_play_sharp),
-    );
-  }
-}
-
-/// *DARIO* it reads the current playtime from getCurrentPositionStream
-class VideoPositionIndicator extends StatelessWidget {
-  ///
-  const VideoPositionIndicator({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final controller = context.ytController;
-    return StreamBuilder<Duration>(
-      stream: controller.getCurrentPositionStream(), //*DARIO* a stream that is periodically updated with current playing time
-      initialData: Duration.zero,
-      builder: (context, snapshot) {
-        final position = snapshot.data?.inMilliseconds ?? 0;
-        final duration = controller.metadata.duration.inMilliseconds;
-        return LinearProgressIndicator(
-          value: duration == 0 ? 0 : position / duration,
-          minHeight: 1,
-        );
-      },
-    );
-  }
-}
-
-///
-class VideoPositionSeeker extends StatelessWidget {
-  ///
-  const VideoPositionSeeker({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    var value = 0.0;
-    return Row(
-      children: [
-        const Text(
-          'Seek',
-          style: TextStyle(fontWeight: FontWeight.w300),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: StreamBuilder<Duration>(
-            stream: context.ytController.getCurrentPositionStream(),
-            initialData: Duration.zero,
-            builder: (context, snapshot) {
-              final position = snapshot.data?.inSeconds ?? 0;
-              final duration = context.ytController.metadata.duration.inSeconds;
-
-              value = position == 0 || duration == 0 ? 0 : position / duration;
-
-              return StatefulBuilder(
-                builder: (context, setState) {
-                  return Slider(
-                    value: value,
-                    onChanged: (positionFraction) {
-                      value = positionFraction;
-                      setState(() {});
-
-                      context.ytController.seekTo(
-                        seconds: (value * duration).toDouble(),
-                        allowSeekAhead: true,
-                      );
-                    },
-                    min: 0,
-                    max: 1,
-                  );
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
 }

@@ -63,7 +63,6 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                                 });
                               }),
                           Text(selectedTimeFromBottomline.toString()),
-                          Divider(),
                         ]
                     )
                 )
