@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:scrollable_timeline/scrollable_timeline.dart';
 import 'timeline_item_data.dart';
 
-/// base class for ScrollableTimeline implementations, with common code
+/// base class for [ScrollableTimeline] implementations
 abstract class IScrollableTimeLine {
   abstract final int lengthSecs;
   abstract final int stepSecs;
@@ -21,6 +22,7 @@ abstract class IScrollableTimeLine {
   abstract final Function(double) onDragEnd;
 }
 
+/// the widget used for showing the current selected time in a scrollable timeline
 Widget indicatorWidget(IScrollableTimeLine widget) =>
     Visibility(
       // visibility modifier to make the cursor optional
@@ -44,7 +46,9 @@ Widget indicatorWidget(IScrollableTimeLine widget) =>
       ),
     );
 
-//IMPORTANT: rulerSize smaller than 8 will cause graphic glitches. don't use it
+/// a widget showing two lines of text, the upper with minutes and the lower with
+/// seconds
+/// IMPORTANT: [rulerSize] smaller than 8 will cause graphic glitches. don't use it
 Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData curItem,
     double rulerSize, double rulerInsidePadding) {
   final String secsText = secsText_?? curItem.tSecs.toString();
