@@ -40,8 +40,8 @@ class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine 
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
   final int nPadItems;
-  final int divisions;
-  ScrollableTimeline(
+  final double divisions;
+  const ScrollableTimeline(
       {required this.lengthSecs,
       required this.stepSecs,
       this.timeStream,
@@ -68,7 +68,7 @@ class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine 
         assert(lengthSecs > stepSecs),
         assert(rulerSize>=8,"rulerSize smaller than 8 will cause graphic glitches"),
       pixPerSecs=itemExtent/stepSecs,
-        divisions=(lengthSecs / stepSecs).ceil() + 1; //divisions changes when lenghtSecs is updated apparently this causes the bug!
+        divisions=(lengthSecs / stepSecs) + 1;
 
   @override
   _ScrollableTimelineState createState() => _ScrollableTimelineState();
@@ -250,7 +250,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                     controller: _scrollController,
                     // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
-                    itemCount: widget.divisions+2*widget.nPadItems,
+                    itemCount: widget.divisions.ceil()+2*widget.nPadItems,
                     itemBuilder: _itemBuilder
                ).build(context),
               indicatorWidget(widget)
