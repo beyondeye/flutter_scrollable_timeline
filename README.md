@@ -1,13 +1,13 @@
 # Scrollable Timeline
+  
 Initial code derived from [Horizontal Picker](https://github.com/kaiserleka/horizontal_picker)
 
+# Supported platforms
+todo see examples of docs for other packages
+
 ## Samples
-
-![Horizontal Picker - Sample 1](https://github.com/beyondeye/flutter_scrollable_timeline/blob/master/example/samples/sample1.jpg)
-
-![Horizontal Picker - Sample 2](https://github.com/beyondeye/flutter_scrollable_timeline/blob/master/example/samples/sample2.jpg)
-
-![Horizontal Picker - Sample 3](https://github.com/beyondeye/flutter_scrollable_timeline/blob/master/example/samples/sample3.jpg)
+Here is 
+![YouTube sample](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/example/samples/scrollable_timeline_youtube.gif)
 
 ## Installation
 
