@@ -15,7 +15,7 @@ abstract class IScrollableTimeLine {
   abstract final bool showMinutes;
   abstract final Color cursorColor;
   abstract final Color activeItemTextColor;
-  abstract final Color passiveItemsTextColor;
+  abstract final Color itemTextColor;
   abstract final int itemExtent; //width in pix of each item
   abstract final double pixPerSecs;
   abstract final Function(double) onDragStart;

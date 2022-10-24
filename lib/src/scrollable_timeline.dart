@@ -13,13 +13,53 @@ import 'timeline_item.dart';
 // anonymous function cannot be const in dart
 void _stub(double t) {}
 
-// TODO document this
-/// nPadItems are empty items put at the beginning and end of real time items
-///        they are needed in order to allow to scroll to very beginning time
-///        and very end time items that, since the indicator is positioned in the
-///        center. the value of required pad items is  <= 0.5*(widget width)/(itemExtent)
-///        TODO: wait for when widget width is available (see for https://github.com/ayham95/Measured-Size/blob/main/lib/measured_size.dart)
-///              and automatically define the required number of pad items
+/// A draggable, scrollable, Timeline showing minutes and seconds optionally
+/// synchronized with a [timeStream]
+///
+/// [onDragStart] : callback when the user start dragging the timeline, called
+/// with the current time value when dragging started. When in the
+/// dragging state, updates from [timeStream] are ignored
+///
+/// [onDragEnd] : callback when the user stops dragging the timeline, called with
+/// the selected time value when dragging ended.
+///
+/// [lengthSecs] : the total number of seconds shown in the timeline
+///
+/// [stepSecs] : the time step to use between items in the timeline
+///
+/// [timeStream] : an optional stream of time values. when a value is received
+/// the timeline is scrolled to the received time value.
+///
+/// [rulerOutsidePadding] : outside padding of the the "|" ruler marks: top for
+/// the top ruler marks, and [bottom] for the bottom ruler marks
+///
+/// [rulerInsidePadding] : inside padding of the the "|" ruler marks: bottom for
+/// the top ruler marks and [top] for the bottom ruler marks
+///
+/// [rulerSize] : size of the top and bottom "|" ruler marks
+///
+/// [showCursor] true if the central cursor indicating the current selected time
+/// should be shown
+///
+/// [cursorColor] : color for the central cursor indicating the current selected time
+///
+/// [activeItemTextColor] : not currently used
+///
+/// [itemTextColor] : text color for minutes and seconds texts in the time line
+///
+/// [itemExtent] : width of each time mark item (with text of minutes and seconds)
+///
+/// [showMinutes] : true if both minutes and seconds should be shown in each time mark
+///
+/// [shownSecsMultiples] : number of seconds between shown seconds marks (1 by default)
+///
+/// [backgroundColor] : the background color of the timeline
+///
+/// [nPadItems]  are empty items put at the beginning and end of real time items.
+/// They are needed in order to allow to scroll to very beginning time
+/// and very end time items, since the indicator is positioned in the
+/// center. the value of required pad items is  <= 0.5*(widget width)/(itemExtent)
+/// the default value should be ok for all screens and platforms
 class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine {
   final int lengthSecs;
   final int stepSecs;
@@ -37,7 +77,7 @@ class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine 
   final int  shownSecsMultiples;
   final Color cursorColor;
   final Color activeItemTextColor;
-  final Color passiveItemsTextColor;
+  final Color itemTextColor;
   final int itemExtent; //width in pix of each item
   final double pixPerSecs;
   final int nPadItems;
@@ -55,6 +95,8 @@ class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine 
       //TODO currently this default value is set to a very high value, that is appropriate for even full window full width timeline on web platform
       //     but is actually an overkill. I should define this using mediaquery https://api.flutter.dev/flutter/widgets/MediaQuery-class.html
       //     But since I am using ListView.builder with itemBuilder, it is probably OK to leave the code as it is
+      //  TODO: wait for when widget width is available (see for https://github.com/ayham95/Measured-Size/blob/main/lib/measured_size.dart)
+      //  and automatically define the required number of pad items
       this.nPadItems=50,
       this.backgroundColor = Colors.white,
       this.showCursor = true,
@@ -62,7 +104,7 @@ class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine 
       this.shownSecsMultiples = 1,
       this.cursorColor = Colors.red,
       this.activeItemTextColor = Colors.blue,
-      this.passiveItemsTextColor = Colors.grey,
+      this.itemTextColor = Colors.grey,
       this.itemExtent = 60
       })
       : assert(stepSecs > 0),
@@ -76,8 +118,6 @@ class ScrollableTimeline extends StatefulWidget  implements IScrollableTimeLine 
 }
 
 class _ScrollableTimelineState extends State<ScrollableTimeline> {
-  // Similar to a standard [ScrollController] but with the added convenience
-  // mechanisms to read and go to item indices rather than a raw pixel scroll
   late ScrollController _scrollController;
   late IScrollableTimelineDraggingState draggingState;
   StreamSubscription<double>? timeStreamSub;
@@ -87,7 +127,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     super.initState();
     //print("*FLT* initState called");
     // if isDragging then ignore stream updates about current playing time
-    //by default dragging state is local to this widget (STD
+    // by default dragging state is local to this widget (non shared)
     draggingState = NonSharedDraggingState();
     setScrollController();
     //important: set timeStreamSub after setting up scrollController
@@ -145,9 +185,9 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
         child: NotificationListener<ScrollNotification>(
             onNotification: (scrollNotification) {
               // I need to add some empty items at the beginning and compensate for them
-              //if this scroll is not user generated ignore the notification
+              // if this scroll is not user generated ignore the notification
               if(!draggingState.isDragging) return false; //allow scroll notification to bubble up
-              //final tick = widget.pixPerSecs;
+              // final tick = widget.pixPerSecs;
               if (scrollNotification is ScrollStartNotification) {
                 //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
                 this.widget.onDragStart(_scrollController.offset / widget.pixPerSecs);
@@ -220,7 +260,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
       if(widget.showMinutes) {
         mins = (t / 60).floor();
       }
-      itemData=TimelineItemData(t:t, tMins: mins, tSecs: shownSecs, color: widget.passiveItemsTextColor, fontSize: 14.0);
+      itemData=TimelineItemData(t:t, tMins: mins, tSecs: shownSecs, color: widget.itemTextColor, fontSize: 14.0);
     }
     return TimelineItem(itemData,
         widget.backgroundColor,

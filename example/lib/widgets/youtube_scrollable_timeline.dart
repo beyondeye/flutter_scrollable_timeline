@@ -104,7 +104,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               showCursor: true,
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
-              passiveItemsTextColor: Colors.blue.shade300,
+              itemTextColor: Colors.blue.shade300,
               onDragStart: _pauseVideo,
               onDragEnd: _updateSelectedTime),
         ]
@@ -126,7 +126,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               showCursor: true,
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
-              passiveItemsTextColor: Colors.blue.shade300,
+              itemTextColor: Colors.blue.shade300,
               onDragStart: _pauseVideo,
               onDragEnd: _updateSelectedTime),
           ScrollableTimeline(
@@ -142,7 +142,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               showMinutes: false,
               backgroundColor: Colors.lightBlue.shade100,
               activeItemTextColor: Colors.blue.shade800,
-              passiveItemsTextColor: Colors.blue.shade300,
+              itemTextColor: Colors.blue.shade300,
               onDragStart: _pauseVideo,
               onDragEnd: _updateSelectedTime),
         ]

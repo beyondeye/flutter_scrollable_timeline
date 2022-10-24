@@ -32,7 +32,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               showCursor: true,
                               backgroundColor: Colors.lightBlue.shade50,
                               activeItemTextColor: Colors.blue.shade800,
-                              passiveItemsTextColor: Colors.blue.shade300,
+                              itemTextColor: Colors.blue.shade300,
                               onDragEnd: (double t) {
                                 print(
                                     "*FLT* drag detected for ScrollableTimelineF to target time $t");
@@ -53,7 +53,7 @@ class _BasicExamplePageState extends State<BasicExamplePage> {
                               showMinutes: false,
                               backgroundColor: Colors.lightBlue.shade50,
                               activeItemTextColor: Colors.blue.shade800,
-                              passiveItemsTextColor: Colors.blue.shade300,
+                              itemTextColor: Colors.blue.shade300,
                               onDragEnd: (double t) {
                                 print(
                                     "*FLT* drag detected for ScrollableTimelineF to target time $t");
