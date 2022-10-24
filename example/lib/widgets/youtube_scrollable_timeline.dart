@@ -6,6 +6,16 @@ import '../tickers/youtube_time_ticker.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 
+/// A Expandable [ScrollableTimeline] integrated with a [YoutubePlayerController]
+/// that shows the current playing time.
+/// And when dragged stops the video from playing and at the end of dragging
+/// set the playing time to the selected time.
+///
+/// Arguments: [shownSecsMultiple]: which seconds multiples to show in the "seconds" timeline:
+/// if 1, show all, if 5 show only multiples of 5, and so on
+///
+/// [timeFetchDelay]: time delay in seconds between reading of current playing time
+///  of youtube video
 class YouTubeScrollableTimeline extends StatefulWidget {
   final int shownSecsMultiples;
   final double timeFetchDelay;
@@ -26,6 +36,7 @@ class YouTubeScrollableTimeline extends StatefulWidget {
 }
 
 class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
+  static const mainTimelineStepSecs=10;
   YoutubeTimeTicker? ytTicker;
   @override
   void initState() {
@@ -35,7 +46,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    //ytTicker cannot be initialized in initState because it need to read context.ytController that is not yet initialized
+    // ytTicker cannot be initialized in initState because it needs to read context.ytController that is not yet initialized
     ytTicker = YoutubeTimeTicker(
         yt: context.ytController, timeFetchDelay: widget.timeFetchDelay);
   }
@@ -63,10 +74,10 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
         builder: (context, value) {
           int lengthSecs = value.metaData.duration.inSeconds + 1;
           //print ("YouTubeScrollableTimeline lengthSecs $lengthSecs");
-          if(lengthSecs<20) lengthSecs=20; //to avoid exception when lenghtSecs<stepSecs
+          if(lengthSecs<2*mainTimelineStepSecs) lengthSecs=2*mainTimelineStepSecs; //to avoid exception when lenghtSecs<stepSecs
           return ScrollableTimelineSharedDragging(
               child: SingleChildScrollView(
-                  padding: EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(10),
                   child: ExpandablePanel(
                     header: clickToExpandMessage(),
                     collapsed: _timelines1Widget(lengthSecs),
@@ -84,7 +95,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
         children: <Widget>[
           ScrollableTimeline(
               lengthSecs: lengthSecs,
-              stepSecs: 10,
+              stepSecs: mainTimelineStepSecs,
               height: widget.timeLineHeight,
               rulerOutsidePadding: widget.rulerOutsidePadding,
               rulerInsidePadding: widget.rulerInsidePadding,
@@ -106,7 +117,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
         children: <Widget>[
           ScrollableTimeline(
               lengthSecs: lengthSecs,
-              stepSecs: 10,
+              stepSecs: mainTimelineStepSecs,
               height: widget.timeLineHeight,
               rulerOutsidePadding: widget.rulerOutsidePadding,
               rulerInsidePadding: widget.rulerInsidePadding,
