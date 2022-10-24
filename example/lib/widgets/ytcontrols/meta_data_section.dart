@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-///
+/// original code from https://github.com/sarbagyastha/youtube_player_flutter/tree/master/packages/youtube_player_iframe/example/lib
 class MetaDataSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,7 +35,7 @@ class MetaDataSection extends StatelessWidget {
                   'Speed',
                   '',
                 ),
-                YoutubeValueBuilder( //*DARIO* why I need another internal YoutubeValueBuilder here?:  because this specific child should be changing always when YoutubePlayerController value changes
+                YoutubeValueBuilder( // why I need another internal YoutubeValueBuilder here?:  because this specific child should be changing always when YoutubePlayerController value changes
                   builder: (context, value) {
                     return DropdownButton(
                       value: value.playbackRate,
@@ -56,7 +56,7 @@ class MetaDataSection extends StatelessWidget {
                           .toList(),
                       onChanged: (double? newValue) {
                         if (newValue != null) {
-                          //*DARIO* here I am using an extension method to access ytController associated to current context using YoutubePlayerControllerProvider
+                          // here I am using an extension method to access ytController associated to current context using YoutubePlayerControllerProvider
                           context.ytController.setPlaybackRate(newValue);
                         }
                       },
@@ -71,7 +71,7 @@ class MetaDataSection extends StatelessWidget {
     );
   }
 }
-//*DARIO* a styled text label (title) and text value(value)
+/// a styled text label (title) and text value(value)
 class _Text extends StatelessWidget {
   final String title;
   final String value;

@@ -5,7 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-///
+/// original code from https://github.com/sarbagyastha/youtube_player_flutter/tree/master/packages/youtube_player_iframe/example/lib
 class VolumeSlider extends StatefulWidget {
   ///
   const VolumeSlider({super.key});

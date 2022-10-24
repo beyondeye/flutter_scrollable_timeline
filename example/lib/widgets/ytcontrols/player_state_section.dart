@@ -5,13 +5,13 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
-///
+/// original code from https://github.com/sarbagyastha/youtube_player_flutter/tree/master/packages/youtube_player_iframe/example/lib
 class PlayerStateSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return YoutubeValueBuilder(
       builder: (context, value) {
-        return AnimatedContainer( // *DARIO* animated version of Container widget
+        return AnimatedContainer( // animated version of Container widget
           duration: const Duration(milliseconds: 800),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
