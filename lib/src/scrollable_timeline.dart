@@ -13,6 +13,7 @@ import 'timeline_item.dart';
 // anonymous function cannot be const in dart
 void _stub(double t) {}
 
+// TODO document this
 /// nPadItems are empty items put at the beginning and end of real time items
 ///        they are needed in order to allow to scroll to very beginning time
 ///        and very end time items that, since the indicator is positioned in the
