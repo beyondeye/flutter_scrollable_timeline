@@ -10,14 +10,10 @@ class TimelineItem extends StatefulWidget {
   final double rulerSize;
   final double rulerInsidePadding;
 
-  const TimelineItem(
-    this.curItem,
-    this.backgroundColor,
-    this.rulerOutsidePadding,
-    this.rulerSize,
-    this.rulerInsidePadding,
-    {Key? key}
-    ) : super(key: key);
+  const TimelineItem(this.curItem, this.backgroundColor,
+      this.rulerOutsidePadding, this.rulerSize, this.rulerInsidePadding,
+      {Key? key})
+      : super(key: key);
 
   @override
   _TimelineItemState createState() => _TimelineItemState();
@@ -31,8 +27,8 @@ class _TimelineItemState extends State<TimelineItem> {
   void initState() {
     super.initState();
 
-    final curItem= widget.curItem;
-    final secs=curItem.tSecs;
+    final curItem = widget.curItem;
+    final secs = curItem.tSecs;
     secsText = secs?.toString() ?? "|";
     minsText = curItem.tMins?.toString();
   }
@@ -41,16 +37,16 @@ class _TimelineItemState extends State<TimelineItem> {
   Widget build(BuildContext context) {
     return FittedBox(
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 1,
-          vertical: widget.rulerOutsidePadding,
-        ),
-        decoration: BoxDecoration(
-          color: widget.backgroundColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-          child: itemMinSecsLabels(secsText,minsText, widget.curItem,widget.rulerSize,widget.rulerInsidePadding)
-      ),
+          padding: EdgeInsets.symmetric(
+            horizontal: 1,
+            vertical: widget.rulerOutsidePadding,
+          ),
+          decoration: BoxDecoration(
+            color: widget.backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: itemMinSecsLabels(secsText, minsText, widget.curItem,
+              widget.rulerSize, widget.rulerInsidePadding)),
     );
   }
 }

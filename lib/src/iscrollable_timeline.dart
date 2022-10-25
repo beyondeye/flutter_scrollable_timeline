@@ -23,8 +23,7 @@ abstract class IScrollableTimeLine {
 }
 
 /// the widget used for showing the current selected time in a scrollable timeline
-Widget indicatorWidget(IScrollableTimeLine widget) =>
-    Visibility(
+Widget indicatorWidget(IScrollableTimeLine widget) => Visibility(
       // visibility modifier to make the cursor optional
       visible: widget.showCursor,
       child: Container(
@@ -38,8 +37,8 @@ Widget indicatorWidget(IScrollableTimeLine widget) =>
               Radius.circular(
                   10), // this is the radius at the top and bottom of the indicator line: it is almost invisible
             ),
-            color: widget.cursorColor.withOpacity(
-                0.3), //  make the indicator line semi-transparent
+            color: widget.cursorColor
+                .withOpacity(0.3), //  make the indicator line semi-transparent
           ),
           width: 3, //  this is the width of the indicator line
         ),
@@ -49,9 +48,9 @@ Widget indicatorWidget(IScrollableTimeLine widget) =>
 /// a widget showing two lines of text, the upper with minutes and the lower with
 /// seconds
 /// IMPORTANT: [rulerSize] smaller than 8 will cause graphic glitches. don't use it
-Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData curItem,
-    double rulerSize, double rulerInsidePadding) {
-  final String secsText = secsText_?? curItem.tSecs.toString();
+Widget itemMinSecsLabels(String? secsText_, String? minsText_,
+    TimelineItemData curItem, double rulerSize, double rulerInsidePadding) {
+  final String secsText = secsText_ ?? curItem.tSecs.toString();
   final String? minsText = minsText_ ?? curItem.tMins?.toString();
   return Column(
     mainAxisSize: MainAxisSize.min,
@@ -64,32 +63,33 @@ Widget itemMinSecsLabels(String? secsText_,String? minsText_,TimelineItemData cu
       SizedBox(height: rulerInsidePadding),
       ...((minsText == null)
           ? [] //nothing to the colum if minsText is null
-          : [ //add minutes text if minsText not null
-        RichText(
-          //this is the minutes text  label for this element
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: minsText,
-                style: TextStyle(
-                    fontSize: curItem.fontSize,
-                    color: curItem.color,
-                    fontWeight: secsText == "0"
-                        ? FontWeight.w800
-                        : FontWeight.w400),
+          : [
+              //add minutes text if minsText not null
+              RichText(
+                //this is the minutes text  label for this element
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: minsText,
+                      style: TextStyle(
+                          fontSize: curItem.fontSize,
+                          color: curItem.color,
+                          fontWeight: secsText == "0"
+                              ? FontWeight.w800
+                              : FontWeight.w400),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ]),
-      RichText( // this is the seconds text  label for this element
+            ]),
+      RichText(
+        // this is the seconds text  label for this element
         text: TextSpan(
           children: [
             TextSpan(
               text: secsText,
-              style: TextStyle(
-                  fontSize: curItem.fontSize,
-                  color: curItem.color),
+              style:
+                  TextStyle(fontSize: curItem.fontSize, color: curItem.color),
             )
           ],
         ),
