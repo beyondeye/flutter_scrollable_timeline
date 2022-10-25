@@ -31,10 +31,10 @@ void _stub(double t) {}
 /// the timeline is scrolled to the received time value.
 ///
 /// [rulerOutsidePadding] : outside padding of the the "|" ruler marks: top for
-/// the top ruler marks, and [bottom] for the bottom ruler marks
+/// the top ruler marks, and bottom for the bottom ruler marks
 ///
 /// [rulerInsidePadding] : inside padding of the the "|" ruler marks: bottom for
-/// the top ruler marks and [top] for the bottom ruler marks
+/// the top ruler marks and top for the bottom ruler marks
 ///
 /// [rulerSize] : size of the top and bottom "|" ruler marks
 ///
