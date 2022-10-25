@@ -2,5 +2,5 @@
 * initial release
 
 ## [1.0.1]
-* TODO
+* improved documentation, fixed source text formatting
 
