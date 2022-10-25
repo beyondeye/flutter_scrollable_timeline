@@ -1,4 +1,4 @@
-[![Pub](https://img.shields.io/pub/v/flutter_scrollable_timeline.svg)](https://pub.dartlang.org/packages/flutter_scrollable_timeline)
+[![Pub](https://img.shields.io/pub/v/scrollable_timeline.svg)](https://pub.dartlang.org/packages/scrollable_timeline)
 [![License](https://img.shields.io/badge/licence-BSD3-blue.svg)](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/beyondeye/flutter_scrollable_timeline.svg?style=social)](https://github.com/beyondeye/flutter_scrollable_timeline)
 
@@ -21,7 +21,7 @@ Here is a recording of the most complete example, run on a Android device.
   (using the [youtube_player_iframe library](https://pub.dev/packages/youtube_player_iframe))
 ## Installation
 
-[Installing section](https://pub.dev/packages/flutter_scrollable_timelin#-installing-tab-)
+[Installing section](https://pub.dev/packages/scrollable_timeline#-installing-tab-)
 
 ## Usage Example
 
