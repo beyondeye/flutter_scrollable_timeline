@@ -13,7 +13,7 @@ Here is a recording of the most complete example, run on a Android device.
 
 ![YouTube sample](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/example/samples/scrollable_timeline_youtube.gif)
 
-###Links to examples code
+### Links to examples code
 - [simple example](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/example/lib/pages/basic_example_page.dart)
 - [Expandable example](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/example/lib/pages/expandable_example_page.dart)
   (using the [expandable library](https://pub.dev/packages/expandable))
