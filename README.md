@@ -74,5 +74,6 @@ Parameter              |Default value | Description
 
 ![params legend](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/example/samples/min_secs_timeline_with_legend_clipped.png)
 
-
+## License
+Copyright 2022 Dario Elyasy, under the [BSD 3-Clause License](https://github.com/beyondeye/flutter_scrollable_timeline/blob/main/LICENSE)
 
