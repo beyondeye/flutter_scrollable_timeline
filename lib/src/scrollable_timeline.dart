@@ -60,27 +60,56 @@ void _stub(double t) {}
 /// center. the value of required pad items is  <= 0.5*(widget width)/(itemExtent)
 /// the default value should be ok for all screens and platforms
 class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
+  /// the total number of seconds shown in the timeline
   final int lengthSecs;
+  /// the time step to use between items in the timeline
   final int stepSecs;
+  /// an optional stream of time values.
+  ///
+  /// when a value is received the timeline is scrolled to the received time value.
   final Stream<double>? timeStream;
+
+  /// callback when the user start dragging the timeline
+  ///
+  /// called with the current time value when dragging started. When in the
+  /// dragging state, updates from [timeStream] are ignored.
   final Function(double) onDragStart;
+  /// callback when the user stops dragging the timeline
+  ///
+  /// called with the selected time value when dragging ended.
   final Function(double) onDragEnd;
+  /// the widget requested height
   final double height;
+  /// outside padding of the the "|" ruler marks
+  ///
+  /// top for the top ruler marks, and bottom for the bottom ruler marks
   final double rulerOutsidePadding;
+  /// size of the top and bottom "|" ruler marks
   final double rulerSize;
+  /// inside padding of the the "|" ruler marks
+  ///
+  /// bottom for the top ruler marks and top for the bottom ruler marks
   final double rulerInsidePadding;
+  /// the background color of the timeline
   final Color backgroundColor;
+  /// true if the central cursor indicating the current selected time should be shown
   final bool showCursor;
+  /// true if both minutes and seconds should be shown in each time mark
   final bool showMinutes;
-  // if not 1 then print actual number for seconds only they are an integer multiple of shownSecsMultiples
+  /// number of seconds between shown seconds marks (1 by default)
   final int shownSecsMultiples;
+  /// color for the central cursor indicating the current selected time
   final Color cursorColor;
+  /// currently not used
   final Color activeItemTextColor;
+  /// text color for minutes and seconds texts in the time line
   final Color itemTextColor;
-  final int itemExtent; //width in pix of each item
-  final double pixPerSecs;
+  /// width of each time mark item (with text of minutes and seconds)
+  final int itemExtent;
+  final double _pixPerSecs;
   final int nPadItems;
-  final double divisions;
+  final double _divisions;
+  /// the class constructor
   const ScrollableTimeline(
       {required this.lengthSecs,
       required this.stepSecs,
@@ -109,8 +138,8 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
         assert(lengthSecs > stepSecs),
         assert(rulerSize >= 8,
             "rulerSize smaller than 8 will cause graphic glitches"),
-        pixPerSecs = itemExtent / stepSecs,
-        divisions = (lengthSecs / stepSecs) + 1;
+        _pixPerSecs = itemExtent / stepSecs,
+        _divisions = (lengthSecs / stepSecs) + 1;
 
   @override
   _ScrollableTimelineState createState() => _ScrollableTimelineState();
@@ -128,7 +157,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     // if isDragging then ignore stream updates about current playing time
     // by default dragging state is local to this widget (non shared)
     draggingState = NonSharedDraggingState();
-    setScrollController();
+    _setScrollController();
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
       if (draggingState.isDragging) {
@@ -141,16 +170,18 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     });
   }
 
+  /// convert a time to a scroll offset for the timeline
   double timeToScrollOffset(double t) {
     double w = context.size?.width ?? 0.0;
-    return t * widget.pixPerSecs -
+    return t * widget._pixPerSecs -
         (w / 2 - widget.itemExtent * (0.5 + widget.nPadItems));
   }
 
+  /// convert a scroll offset of the timeline to a time
   double scrollOffsetToTime(double offset) {
     double w = context.size?.width ?? 0.0;
     return (offset + (w / 2 - widget.itemExtent * (0.5 + widget.nPadItems))) /
-        widget.pixPerSecs;
+        widget._pixPerSecs;
   }
 
   @override
@@ -159,7 +190,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     timeStreamSub?.cancel();
   }
 
-  void setScrollController() {
+  void _setScrollController() {
     _scrollController = ScrollController(initialScrollOffset: 0);
     //the following is not needed: we listern from timeStream instead
 //    _scrollController.jumpTo(value);
@@ -195,7 +226,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                 //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
                 this
                     .widget
-                    .onDragStart(_scrollController.offset / widget.pixPerSecs);
+                    .onDragStart(_scrollController.offset / widget._pixPerSecs);
 //          } else if (scrollNotification is ScrollUpdateNotification) {
 //            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
               } else if (scrollNotification is ScrollEndNotification) {
@@ -252,7 +283,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   TimelineItem _itemBuilder(BuildContext buildContext, int index) {
     TimelineItemData itemData;
     if (index < widget.nPadItems ||
-        index >= widget.nPadItems + widget.divisions) {
+        index >= widget.nPadItems + widget._divisions) {
       itemData = TimelineItemData(
           t: 0,
           tMins: 0,
@@ -303,7 +334,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                     controller: _scrollController,
                     // the size in pixel of each item in the scale
                     itemExtent: widget.itemExtent.toDouble(),
-                    itemCount: widget.divisions.ceil() + 2 * widget.nPadItems,
+                    itemCount: widget._divisions.ceil() + 2 * widget.nPadItems,
                     itemBuilder: _itemBuilder)
                 .build(context),
             indicatorWidget(widget)

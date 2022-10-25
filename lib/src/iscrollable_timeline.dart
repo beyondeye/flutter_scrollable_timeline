@@ -17,7 +17,6 @@ abstract class IScrollableTimeLine {
   abstract final Color activeItemTextColor;
   abstract final Color itemTextColor;
   abstract final int itemExtent; //width in pix of each item
-  abstract final double pixPerSecs;
   abstract final Function(double) onDragStart;
   abstract final Function(double) onDragEnd;
 }
