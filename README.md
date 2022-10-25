@@ -21,7 +21,7 @@ Here is a recording of the most complete example, run on a Android device.
   (using the [youtube_player_iframe library](https://pub.dev/packages/youtube_player_iframe))
 ## Installation
 
-[Installing section](https://pub.dev/packages/scrollable_timeline#-installing-tab-)
+See [the install section](https://pub.dev/packages/scrollable_timeline/install) at the package page.
 
 ## Usage Example
 
