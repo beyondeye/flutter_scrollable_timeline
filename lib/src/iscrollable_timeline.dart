@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:scrollable_timeline/scrollable_timeline.dart';
+import 'scrollable_timeline.dart';
 import 'timeline_item_data.dart';
 
 /// base class for [ScrollableTimeline] implementations

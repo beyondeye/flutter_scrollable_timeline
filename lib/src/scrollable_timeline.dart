@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+
 import 'dragging_state_provider.dart';
 import 'timeline_scrollbehavior.dart';
 import 'iscrollable_timeline.dart';
