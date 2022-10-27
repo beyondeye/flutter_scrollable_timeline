@@ -1,5 +1,5 @@
 name: scrollable_timeline
-version: 1.0.1
+version: 1.0.2
 description: >-
   A scrollable and draggable timeline that can be driven by an external time stream,
   for example, the current playing time of a YouTube video.
