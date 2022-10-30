@@ -19,6 +19,7 @@ abstract class IScrollableTimeLine {
   abstract final int itemExtent; //width in pix of each item
   abstract final Function(double) onDragStart;
   abstract final Function(double) onDragEnd;
+  abstract final bool enablePosUpdateWhileDragging;
 }
 
 /// the widget used for showing the current selected time in a scrollable timeline
