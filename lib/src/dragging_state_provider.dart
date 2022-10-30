@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 
 abstract class IScrollableTimelineDraggingState {
   abstract bool isDragging;
+  abstract int draggingId;
 }
 
 /// internal class used in [ScrollableTimeline] when its dragging state is
@@ -10,6 +11,8 @@ class NonSharedDraggingState implements IScrollableTimelineDraggingState {
   NonSharedDraggingState();
   @override
   bool isDragging = false;
+  /// identityHashCode of the widget that is driving the dragging
+  int draggingId=0;
 }
 
 /// a widget that provides a shared [isDragging] state to children
@@ -27,6 +30,7 @@ class ScrollableTimelineSharedDragging extends InheritedWidget
 
   @override
   bool isDragging = false;
+  int  draggingId =0;
 
   static ScrollableTimelineSharedDragging? of(BuildContext context) {
     final ScrollableTimelineSharedDragging? result = context
@@ -37,5 +41,6 @@ class ScrollableTimelineSharedDragging extends InheritedWidget
 
   @override
   bool updateShouldNotify(ScrollableTimelineSharedDragging old) =>
-      isDragging != old.isDragging;
+      (isDragging != old.isDragging) ||
+      (draggingId != draggingId);
 }

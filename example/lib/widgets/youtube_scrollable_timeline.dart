@@ -57,6 +57,7 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
   void _updateSelectedTime(double t) {
     //print("*FLT* drag detected for ScrollableTimelineF to target time $t");
     setState(() {
+      ytTicker?.resetForcedCurTime();
       ytTicker?.curt = t.roundToDouble();
     });
     _seekToNewTime(t);
@@ -127,8 +128,11 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
               itemTextColor: Colors.blue.shade300,
+              enablePosUpdateWhileDragging: true,
               onDragStart: _pauseVideo,
-              onDragEnd: _updateSelectedTime),
+              onDragUpdate: (t) {  ytTicker?.setForcedCurTime(t); }, //no setState needed here, because the updated time stream will already trigger rebuild
+              onDragEnd: _updateSelectedTime,
+          ),
           ScrollableTimeline(
               lengthSecs: lengthSecs,
               stepSecs: 1,
@@ -143,8 +147,11 @@ class _YouTubeScrollableTimelineState extends State<YouTubeScrollableTimeline> {
               backgroundColor: Colors.lightBlue.shade100,
               activeItemTextColor: Colors.blue.shade800,
               itemTextColor: Colors.blue.shade300,
+              enablePosUpdateWhileDragging: true,
               onDragStart: _pauseVideo,
-              onDragEnd: _updateSelectedTime),
+              onDragUpdate: (t) {  ytTicker?.setForcedCurTime(t); }, //no setState needed here, because the updated time stream will already trigger rebuild
+              onDragEnd: _updateSelectedTime,
+          ),
         ]
     );
   }

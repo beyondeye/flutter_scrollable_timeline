@@ -10,11 +10,13 @@ class YoutubeTimeTicker {
   final YoutubePlayerController yt;
   final double timeFetchDelay;
   double curt;
+  bool _isCurTimeForced=false;
   late StreamController<double> _controller;
   late Stream<double> stream;
   Timer? _timer;
 
   Future<void> tick(_) async {
+    if(_isCurTimeForced) return;
     try {
       curt = await yt.currentTime;
     } catch (e) {
@@ -28,7 +30,13 @@ class YoutubeTimeTicker {
     final interval = Duration(microseconds: (timeFetchDelay*1000000).toInt());
     _timer = Timer.periodic(interval, tick);
   }
-
+  void setForcedCurTime(double t) {
+    _isCurTimeForced=true;
+    _controller.add(t);
+  }
+  void resetForcedCurTime() {
+    _isCurTimeForced=false;
+  }
   void _stopTimer() {
     _timer?.cancel();
     _timer = null;

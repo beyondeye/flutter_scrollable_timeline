@@ -57,6 +57,8 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
               backgroundColor: Colors.lightBlue.shade50,
               activeItemTextColor: Colors.blue.shade800,
               itemTextColor: Colors.blue.shade300,
+              enablePosUpdateWhileDragging: true,
+              onDragUpdate: (t) {  broadcastticker.setForcedCurTime(t); }, //no setState needed here, because the updated time stream will already trigger rebuild
               onDragEnd: updateSelectedTime),
           ScrollableTimeline(
               lengthSecs: 100,
@@ -71,6 +73,8 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
               backgroundColor: Colors.lightBlue.shade100,
               activeItemTextColor: Colors.blue.shade800,
               itemTextColor: Colors.blue.shade300,
+              enablePosUpdateWhileDragging: true,
+              onDragUpdate: (t) {  broadcastticker.setForcedCurTime(t); }, //no setState needed here, because the updated time stream will already trigger rebuild
               onDragEnd: updateSelectedTime),
           Divider(),
           Text(timelineValue.toString()),
@@ -82,6 +86,7 @@ class _ExpandableExamplePageState extends State<ExpandableExamplePage> {
     print(
         "*FLT* drag detected for ScrollableTimelineF to target time $t");
     broadcastticker.curt = t.roundToDouble();
+    broadcastticker.resetForcedCurTime();
     setState(() {
       timelineValue = t;
     });

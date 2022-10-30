@@ -19,6 +19,10 @@ void _stub(double t) {}
 /// with the current time value when dragging started. When in the
 /// dragging state, updates from [timeStream] are ignored
 ///
+///
+/// [onDragUpdate]: callback when drag position is updated
+///
+///  called with the selected time value during dragging
 /// [onDragEnd] : callback when the user stops dragging the timeline, called with
 /// the selected time value when dragging ended.
 ///
@@ -74,10 +78,14 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   /// called with the current time value when dragging started. When in the
   /// dragging state, updates from [timeStream] are ignored.
   final Function(double) onDragStart;
+  /// called with the selected time value when during dragging when drag position is updated
+  final Function(double) onDragUpdate;
   /// callback when the user stops dragging the timeline
-  ///
   /// called with the selected time value when dragging ended.
   final Function(double) onDragEnd;
+  /// if true then enable update of current position according to time stream even
+  /// while dragging, but only if this is not the widget that is driving the dragging
+  final bool enablePosUpdateWhileDragging;
   /// the widget requested height
   final double height;
   /// outside padding of the the "|" ruler marks
@@ -115,6 +123,8 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
       required this.stepSecs,
       this.timeStream,
       this.onDragStart = _stub,
+      this.onDragUpdate = _stub,
+      this.enablePosUpdateWhileDragging=false,
       this.onDragEnd = _stub,
       required this.height,
       this.rulerOutsidePadding = 10,
@@ -160,10 +170,13 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     _setScrollController();
     //important: set timeStreamSub after setting up scrollController
     timeStreamSub = widget.timeStream?.listen((t) {
-      if (draggingState.isDragging) {
+      if (draggingState.isDragging && !widget.enablePosUpdateWhileDragging) {
         // print("dragging");
         return; //ignore time update if dragging
       }
+      // don't update time for the widget that is driving the dragging
+      if(identityHashCode(widget)==draggingState.draggingId)
+        return;
       // print("not dragging");
       final tClamped = t.clamp(0.0, widget.lengthSecs.toDouble());
       _scrollController.jumpTo(timeToScrollOffset(tClamped));
@@ -195,7 +208,23 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     //the following is not needed: we listern from timeStream instead
 //    _scrollController.jumpTo(value);
   }
-
+  /// programmatically scroll the timeline to the specified time:
+  /// warning: by default the requested time is not clipped inside a valid range
+  void scrollToTime(double t, {bool clipToValidTimeRange=false}) {
+    if(clipToValidTimeRange) {
+      if (t < 0) {
+        t = 0;
+      }
+      if (t > widget.lengthSecs) {
+        t = widget.lengthSecs.toDouble();
+      }
+    }
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      //the following line will cause stack overflow exception if run directly in onNotification() callback
+      final scrollOffset = timeToScrollOffset(t);
+      _scrollController.jumpTo(scrollOffset);
+    });
+  }
   //------------------------------------------------------------
   Widget _gestureConfiguration(BuildContext context, {required Widget child}) {
     return GestureDetector(
@@ -206,58 +235,62 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
         onLongPressDown: (details) {
           //print("*FLT* long press down");
           draggingState.isDragging = true;
+          draggingState.draggingId = identityHashCode(widget);
         },
         onLongPressCancel: () {
           //print ("*flt* long press cancel");
           draggingState.isDragging = false;
+          draggingState.draggingId=0;
         },
         onLongPressEnd: (details) {
           //print ("*flt* long press end");
           draggingState.isDragging = false;
+          draggingState.draggingId=0;
         },
         child: NotificationListener<ScrollNotification>(
             onNotification: (scrollNotification) {
-              // I need to add some empty items at the beginning and compensate for them
               // if this scroll is not user generated ignore the notification
-              if (!draggingState.isDragging)
+              if (!draggingState.isDragging|| draggingState.draggingId!=identityHashCode(widget))
                 return false; //allow scroll notification to bubble up
               // final tick = widget.pixPerSecs;
               if (scrollNotification is ScrollStartNotification) {
                 //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
-                this
-                    .widget
-                    .onDragStart(_scrollController.offset / widget._pixPerSecs);
-//          } else if (scrollNotification is ScrollUpdateNotification) {
-//            print("*FLT* Scroll Update ${_scrollController.offset / tick}");
-              } else if (scrollNotification is ScrollEndNotification) {
+                this.widget.onDragStart(_scrollController.offset / widget._pixPerSecs);
+                return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
+                }
 //              print("*SCR* scroll offs: ${_scrollController.offset}");
 //              print("*SCR* shown items: ${shown_items}");
-                //print("*SCR* Scroll End ${_scrollController.offset / tick}");
-                double t = scrollOffsetToTime(_scrollController.offset);
-                var isClipped = false;
-                if (t < 0) {
-                  t = 0;
-                  isClipped = true;
-                }
-                if (t > widget.lengthSecs) {
-                  t = widget.lengthSecs.toDouble();
-                  isClipped = true;
-                }
+              //print("*SCR* Scroll End ${_scrollController.offset / tick}");
+              double t = scrollOffsetToTime(_scrollController.offset);
+              double? tclipped=null;
+              if (t < 0) {
+                tclipped = 0;
+              }
+              if (t > widget.lengthSecs) {
+                tclipped = widget.lengthSecs.toDouble();
+              }
+
+           if (scrollNotification is ScrollUpdateNotification) {
+                  this.widget.onDragUpdate(t);
+              } else if (scrollNotification is ScrollEndNotification) {
                 //TODO the following code forcing back _scrollController to
                 // a valid position is not always necessary because _scrollController
                 // itself is driven by the current time and if the clippedT is feed
                 // back in widget.timeStream, then the clipping will happen automatically
-                if (isClipped) {
-                  final clippedT = timeToScrollOffset(t);
+                if (tclipped!=null) {
+                  final clippedScrollOffset = timeToScrollOffset(tclipped);
                   SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
                     //the following line will cause stack overflow exception if run directly in onNotification() callback
-                    _scrollController.jumpTo(clippedT);
+                    _scrollController.jumpTo(clippedScrollOffset);
                   });
+                  t=tclipped;
                 }
+                //todo make onDragEnd callback optional? (onDragEnd nullable)
                 this.widget.onDragEnd(t);
                 //print ("*flt* drag end");
                 draggingState.isDragging =
                     false; //this is not redundant:  onLongPressEnd is not always detected
+                draggingState.draggingId=0;
               }
               return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
             },
