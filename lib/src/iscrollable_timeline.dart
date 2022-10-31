@@ -3,6 +3,7 @@ import 'scrollable_timeline.dart';
 import 'timeline_item_data.dart';
 
 /// base class for [ScrollableTimeline] implementations
+/// TODO: not used anymore: remove?
 abstract class IScrollableTimeLine {
   abstract final int lengthSecs;
   abstract final int stepSecs;
@@ -17,8 +18,8 @@ abstract class IScrollableTimeLine {
   abstract final Color activeItemTextColor;
   abstract final Color itemTextColor;
   abstract final int itemExtent; //width in pix of each item
-  abstract final Function(double) onDragStart;
-  abstract final Function(double) onDragEnd;
+  abstract final Function(double)? onDragStart;
+  abstract final Function(double)? onDragEnd;
   abstract final bool enablePosUpdateWhileDragging;
 }
 

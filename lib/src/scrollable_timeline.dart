@@ -10,7 +10,7 @@ import 'timeline_item.dart';
 
 // see https://stackoverflow.com/questions/69960331/constant-constructor-and-function-in-dart
 // anonymous function cannot be const in dart
-void _stub(double t) {}
+//void _stub(double t) {}
 
 /// A draggable, scrollable, Timeline showing minutes and seconds optionally
 /// synchronized with a [timeStream]
@@ -77,15 +77,18 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
   ///
   /// called with the current time value when dragging started. When in the
   /// dragging state, updates from [timeStream] are ignored.
-  final Function(double) onDragStart;
+  final Function(double)? onDragStart;
   /// called with the selected time value when during dragging when drag position is updated
-  final Function(double) onDragUpdate;
+  final Function(double)? onDragUpdate;
   /// callback when the user stops dragging the timeline
   /// called with the selected time value when dragging ended.
-  final Function(double) onDragEnd;
+  final Function(double)? onDragEnd;
   /// if true then enable update of current position according to time stream even
   /// while dragging, but only if this is not the widget that is driving the dragging
   final bool enablePosUpdateWhileDragging;
+  /// callback called  when the visible time range is updated
+  /// the argument is the updated timerange (in seconds)
+  final Function(double)? onVisibileTimeRangeUpdated;
   /// the widget requested height
   final double height;
   /// outside padding of the the "|" ruler marks
@@ -122,10 +125,11 @@ class ScrollableTimeline extends StatefulWidget implements IScrollableTimeLine {
       {required this.lengthSecs,
       required this.stepSecs,
       this.timeStream,
-      this.onDragStart = _stub,
-      this.onDragUpdate = _stub,
+      this.onDragStart,
+      this.onDragUpdate,
       this.enablePosUpdateWhileDragging=false,
-      this.onDragEnd = _stub,
+      this.onVisibileTimeRangeUpdated,
+      this.onDragEnd,
       required this.height,
       this.rulerOutsidePadding = 10,
       this.rulerSize = 8,
@@ -159,6 +163,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   late ScrollController _scrollController;
   late IScrollableTimelineDraggingState draggingState;
   StreamSubscription<double>? timeStreamSub;
+  double visibleTimeRangeSecs=0;
 
   @override
   void initState() {
@@ -183,9 +188,19 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
     });
   }
 
+  void updateVisibleTimeRange(double newRangeSecs)
+  {
+    if(visibleTimeRangeSecs==newRangeSecs) return;
+    //print("new visible range:$newRangeSecs");
+    visibleTimeRangeSecs=newRangeSecs;
+    widget.onVisibileTimeRangeUpdated?.call(newRangeSecs);
+  }
+
+
   /// convert a time to a scroll offset for the timeline
   double timeToScrollOffset(double t) {
-    double w = context.size?.width ?? 0.0;
+    double w=context.size?.width ?? 0.0;
+    updateVisibleTimeRange(w/widget._pixPerSecs);
     return t * widget._pixPerSecs -
         (w / 2 - widget.itemExtent * (0.5 + widget.nPadItems));
   }
@@ -193,6 +208,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
   /// convert a scroll offset of the timeline to a time
   double scrollOffsetToTime(double offset) {
     double w = context.size?.width ?? 0.0;
+    updateVisibleTimeRange(w/widget._pixPerSecs);
     return (offset + (w / 2 - widget.itemExtent * (0.5 + widget.nPadItems))) /
         widget._pixPerSecs;
   }
@@ -247,7 +263,11 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
           draggingState.isDragging = false;
           draggingState.draggingId=0;
         },
-        child: NotificationListener<ScrollNotification>(
+        onLongPressMoveUpdate:(details) {
+            //print ("*flt* long press move update");
+          },
+    child: NotificationListener<ScrollNotification>(
+
             onNotification: (scrollNotification) {
               // if this scroll is not user generated ignore the notification
               if (!draggingState.isDragging|| draggingState.draggingId!=identityHashCode(widget))
@@ -255,7 +275,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
               // final tick = widget.pixPerSecs;
               if (scrollNotification is ScrollStartNotification) {
                 //print("*SCR* Scroll Start ${_scrollController.offset / tick}");
-                this.widget.onDragStart(_scrollController.offset / widget._pixPerSecs);
+                this.widget.onDragStart?.call(_scrollController.offset / widget._pixPerSecs);
                 return false; // allow scroll notification to bubble up (important: otherwise pan gesture is not recognized)
                 }
 //              print("*SCR* scroll offs: ${_scrollController.offset}");
@@ -271,7 +291,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
               }
 
            if (scrollNotification is ScrollUpdateNotification) {
-                  this.widget.onDragUpdate(t);
+                  this.widget.onDragUpdate?.call(t);
               } else if (scrollNotification is ScrollEndNotification) {
                 //TODO the following code forcing back _scrollController to
                 // a valid position is not always necessary because _scrollController
@@ -286,7 +306,7 @@ class _ScrollableTimelineState extends State<ScrollableTimeline> {
                   t=tclipped;
                 }
                 //todo make onDragEnd callback optional? (onDragEnd nullable)
-                this.widget.onDragEnd(t);
+                this.widget.onDragEnd?.call(t);
                 //print ("*flt* drag end");
                 draggingState.isDragging =
                     false; //this is not redundant:  onLongPressEnd is not always detected
